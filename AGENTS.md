@@ -1,3 +1,10 @@
+# Project notes (read before working)
+
+This is the Brilliance Cleaning & Property Staging website + admin (Next.js 16, Prisma/Postgres).
+- **Start with `HANDOVER.md`** — current state, remaining work in order, deploy steps, gotchas.
+- Then `README.md`, `docs/SEO-STRATEGY.md`, `content/BRIEF.md` (copy rules: never invent claims, reviews or prices).
+- Never commit secrets or the `../wp-export/` data (staff PII). Deploy only from `main`.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know

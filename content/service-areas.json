@@ -453,5 +453,44 @@
       "For holiday homes, remove guest brochures, key boxes and personal items before styling begins.",
       "If you're leaving on a posting, we can stage after the removalists go so the home is marketed while you're away."
     ]
+  },
+  {
+    "service": "hospitality-staffing",
+    "area": "newcastle",
+    "metaTitle": "Hospitality Staffing Newcastle | Chefs & Kitchen Hands",
+    "metaDescription": "Chefs, cooks, kitchen hands and cleaners for Newcastle restaurants, pubs, clubs and function venues. Regular shifts or event cover. Call 0411 463 552.",
+    "h1": "Hospitality Staffing in Newcastle",
+    "intro": "Newcastle's food and drink scene runs on tight rosters. Restaurants along Darby Street, pubs and bars in Hamilton and on Hunter Street, waterfront venues at Honeysuckle and the big clubs in the suburbs all hit the same wall when a cook calls in sick on a Friday or a function doubles in size. We supply chefs, cooks, kitchen hands and cleaners to Newcastle venues for regular shifts, one-off events and cover during leave.\n\nTell us the section you need covered, the menu style and the qualifications the shift calls for, such as food handling or a Food Safety Supervisor certificate, and we'll match staff who fit. For venues that also want the place cleaned after close, our venue cleaning team can take care of that too, so one call covers the kitchen roster and the overnight clean.",
+    "localTips": [
+      "Book Newcastle Knights home games, big concert weekends and December party season early — every venue in town is chasing the same casual staff.",
+      "Share your staff entrance and parking details: many inner-city venues around Darby Street and the East End have limited parking for late finishes.",
+      "For regular shifts, ask for the same kitchen hand or cook each week so they learn your menu and layout."
+    ]
+  },
+  {
+    "service": "hospitality-staffing",
+    "area": "hunter-valley",
+    "metaTitle": "Hospitality Staffing Hunter Valley | Kitchen & Cleaning",
+    "metaDescription": "Kitchen and cleaning staff for Hunter Valley wineries, cellar door restaurants, wedding venues and accommodation in Pokolbin and Cessnock. Enquire now.",
+    "h1": "Hospitality Staffing in the Hunter Valley",
+    "intro": "Wine country hospitality has a rhythm of its own: quiet midweek, then cellar door restaurants, wedding venues and accommodation in Pokolbin, Rothbury and around Cessnock go flat out from Friday to Sunday. Recruiting permanent staff for those peaks is hard when the venue sits a drive from the nearest town. We supply chefs, cooks, kitchen hands and cleaners for Hunter Valley weekends, wedding season, concerts and festivals, and for midweek cover when your regulars take leave.\n\nWe plan travel into the roster so staff arrive on time for early breakfast services and stay for late wedding receptions. Tell us the number of covers, the menu style and the qualifications you need, and we'll put together a crew for the shift — whether that's two kitchen hands for a Saturday or a full kitchen and cleaning team for a wedding weekend.",
+    "localTips": [
+      "Wedding season (spring and autumn) and big concert weekends fill up fast — give as much notice as you can for Saturday shifts.",
+      "Tell us if the venue has staff accommodation or shuttle options; it widens the pool of staff who can cover late finishes.",
+      "Pair kitchen staff with a cleaner for the Sunday reset so rooms and the kitchen are ready for Monday."
+    ]
+  },
+  {
+    "service": "hospitality-staffing",
+    "area": "port-stephens",
+    "metaTitle": "Hospitality Staffing Port Stephens | Chefs & Cleaners",
+    "metaDescription": "Seasonal chefs, cooks, kitchen hands and cleaners for Nelson Bay and Port Stephens restaurants, clubs, resorts and holiday accommodation. Call us today.",
+    "h1": "Hospitality Staffing in Port Stephens",
+    "intro": "Port Stephens is a seasonal market. Restaurants on the Nelson Bay foreshore, clubs and bowlos, resorts and holiday accommodation from Shoal Bay to Anna Bay can go from a skeleton crew in winter to every table and room booked over summer and the school holidays. We supply chefs, cooks, kitchen hands and cleaners to Port Stephens venues so you can scale your roster up for the season without carrying extra permanent staff all year.\n\nOur team covers busy weekends, Christmas and Easter, whale-watching season and events, as well as room turnovers for accommodation on change-over days. Tell us your dates, numbers and the qualifications each shift needs, and we'll plan the travel from Newcastle and Raymond Terrace into the roster so staff arrive ready for service.",
+    "localTips": [
+      "Lock in summer and school-holiday cover before the season starts — demand for casual kitchen staff on the Tomaree Peninsula peaks at the same time for every venue.",
+      "For accommodation, combine room-turnover cleaners with kitchen staff on change-over Saturdays.",
+      "Share parking and staff entry details for foreshore venues, where parking is tight in peak season."
+    ]
   }
 ]

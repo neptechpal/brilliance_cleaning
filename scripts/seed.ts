@@ -3,6 +3,7 @@
  *
  *   npx tsx scripts/seed.ts            # create missing rows only (safe on production — never overwrites admin edits)
  *   npx tsx scripts/seed.ts --force    # overwrite content rows from JSON
+ *   npx tsx scripts/seed.ts --force-slugs=hospitality-staffing,hospitality-staffing/newcastle   # overwrite only these rows
  *
  * Admin user: ADMIN_EMAIL / ADMIN_PASSWORD env, otherwise a random password is generated and written to
  * ../admin-credentials-local.txt (chmod 600, outside the repo).
@@ -15,6 +16,8 @@ import { PrismaClient, type Prisma } from "@prisma/client";
 
 const db = new PrismaClient();
 const FORCE = process.argv.includes("--force");
+// services/posts use their slug, service-area pages use "<service>/<area>"
+const FORCE_SLUGS = new Set((process.argv.find((a) => a.startsWith("--force-slugs="))?.split("=")[1] ?? "").split(",").filter(Boolean));
 const dir = join(__dirname, "..", "content");
 
 function load<T>(file: string): T[] {
@@ -56,7 +59,7 @@ async function upsert<T>(label: string, exists: () => Promise<unknown>, create: 
     await create();
     return "created";
   }
-  if (FORCE) {
+  if (FORCE || FORCE_SLUGS.has(label)) {
     await update();
     return "updated";
   }
@@ -185,7 +188,15 @@ async function seedKeywords() {
     ["commercial kitchen cleaning newcastle", "local", "Hospitality Venue Cleaning", 2],
     ["winery cleaning hunter valley", "local", "Hospitality Venue Cleaning", 2, "/services/hospitality-cleaning/hunter-valley"],
     ["wedding venue cleaning hunter valley", "local", "Hospitality Venue Cleaning", 3],
-    ["hospitality staff hire newcastle", "local", "Hospitality Staffing", 2, "/services/hospitality-staffing"],
+    ["hospitality staff hire newcastle", "local", "Hospitality Staffing", 2, "/services/hospitality-staffing/newcastle"],
+    ["chef hire newcastle", "local", "Hospitality Staffing", 1, "/services/hospitality-staffing/newcastle"],
+    ["kitchen hand hire newcastle", "local", "Hospitality Staffing", 2, "/services/hospitality-staffing/newcastle"],
+    ["hospitality labour hire newcastle", "local", "Hospitality Staffing", 2, "/services/hospitality-staffing"],
+    ["kitchen staff hunter valley", "local", "Hospitality Staffing", 2, "/services/hospitality-staffing/hunter-valley"],
+    ["chef jobs newcastle", "local", "Careers", 2, "/careers"],
+    ["kitchen hand jobs newcastle", "local", "Careers", 2, "/careers"],
+    ["cleaning jobs newcastle", "local", "Careers", 2, "/careers"],
+    ["hospitality jobs hunter valley", "local", "Careers", 3, "/careers"],
     ["home staging newcastle", "local", "Property Staging", 1, "/services/property-staging"],
     ["home staging cost newcastle", "commercial", "Property Staging", 2],
     ["after builders clean newcastle", "local", "Post-Construction Cleaning", 2, "/services/post-construction-cleaning"],
@@ -222,6 +233,8 @@ async function seedRedirects() {
   // URLs from the old WordPress site that had real pages
   const rows = [
     { from: "/booking", to: "/quote", code: 301, note: "Old WP booking page" },
+    { from: "/signup", to: "/careers", code: 301, note: "Old WP staff signup form" },
+    { from: "/join-our-team", to: "/careers", code: 301, note: "Friendly URL" },
     { from: "/home", to: "/", code: 301, note: "Old WP" },
     { from: "/residential-cleaning", to: "/services/house-cleaning", code: 301, note: "Old service name" },
     { from: "/commercial-cleaning", to: "/services/commercial-cleaning", code: 301, note: "Old service name" },

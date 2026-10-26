@@ -292,3 +292,257 @@ model Setting {
   value     Json
   updatedAt DateTime @updatedAt
 }
+
+// ─── Staffing: job applications ("Join our team") ────────────────────
+
+enum ApplicationStatus {
+  NEW
+  REVIEWING
+  INTERVIEW
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+model StaffApplication {
+  id             Int               @id @default(autoincrement())
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  status         ApplicationStatus @default(NEW)
+  firstName      String
+  lastName       String
+  email          String?
+  phone          String?
+  experience     String
+  roles          String[] // Cook, Chef, Kitchen Hand, Cleaner
+  expertise      String[] // cuisines / sections / skills
+  qualifications String[]
+  workRights     String?
+  employmentType String[] // PAYG (TFN) | ABN Contractor
+  locations      String
+  languages      String?
+  linkedinUrl    String?
+  shiftTypes     String[] // Casual | Part-time | Full-time | Event/On-call
+  ownTransport   Boolean           @default(false)
+  availability   String[] // "Mon:morning", "Sat:night" …
+  referee1       String?
+  referee2       String?
+  emergencyName  String?
+  emergencyPhone String?
+  consent        Boolean           @default(false)
+  signature      String
+  rating         Int? // internal 1–5
+  active         Boolean           @default(false) // shown to venues in the /booking staff-preference picker
+  source         String            @default("form") // form | admin | wordpress
+  bio            String?
+  legacyId       Int?              @unique // WordPress hos_staff post id
+
+  pagePath    String?
+  referrer    String?
+  channel     String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  visitorId   String?
+  device      String?
+  userAgent   String?
+  ipHash      String?
+  spamReason  String?
+  emailSent   Boolean @default(false)
+  emailError  String?
+
+  files ApplicantFile[]
+  notes ApplicationNote[]
+
+  @@index([createdAt])
+  @@index([status])
+}
+
+model ApplicantFile {
+  id            Int              @id @default(autoincrement())
+  applicationId Int
+  application   StaffApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  kind          String // photo | resume | certificate
+  originalName  String
+  mime          String
+  size          Int
+  storedName    String           @unique
+  createdAt     DateTime         @default(now())
+
+  @@index([applicationId])
+}
+
+model ApplicationNote {
+  id            Int              @id @default(autoincrement())
+  applicationId Int
+  application   StaffApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  body          String
+  authorName    String?
+  createdAt     DateTime         @default(now())
+
+  @@index([applicationId])
+}
+
+// ─── Hospitality staff bookings (venues requesting chefs, cooks, kitchen hands, cleaners) ──
+
+enum BookingStatus {
+  NEW
+  CONFIRMED
+  FILLED
+  COMPLETED
+  CANCELLED
+}
+
+model StaffBooking {
+  id                Int           @id @default(autoincrement())
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  status            BookingStatus @default(NEW)
+  venue             String
+  address           String
+  contactName       String
+  contactPhone      String
+  contactEmail      String
+  position          String
+  rateAud           Float? // base rate at time of booking (ex GST)
+  date              String // YYYY-MM-DD (Sydney)
+  startTime         String // HH:MM
+  endTime           String
+  quantity          Int           @default(1)
+  notes             String?
+  estimateAud       Float? // live estimate shown to the client (ex GST)
+  preferredStaffIds Int[]
+  assignedStaffIds  Int[]
+  activity          Json          @default("[]") // [{ at, actor, type, message }]
+  acceptedPolicies  Boolean       @default(false)
+
+  pagePath    String?
+  channel     String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  gclid       String?
+  visitorId   String?
+  device      String?
+  ipHash      String?
+  legacyId    Int?    @unique
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([date])
+}
+
+// ─── Roster (replaces the WordPress "BR Roster" / SJ Cleaning Staff Portal) ─────────────
+
+model CostCentre {
+  id             Int        @id @default(autoincrement())
+  name           String     @unique
+  address        String?
+  contactName    String?
+  contactPhone   String?
+  notes          String?
+  geofenceRadius Int        @default(200) // metres; 0 = no geofence
+  lat            Float?
+  lng            Float?
+  active         Boolean    @default(true)
+  legacyId       Int?       @unique
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  employees      Employee[]
+  shifts         Shift[]
+}
+
+model Employee {
+  id              Int          @id @default(autoincrement())
+  firstName       String
+  lastName        String
+  email           String       @unique // also the portal username
+  passwordHash    String?
+  mustSetPassword Boolean      @default(false)
+  phone           String
+  address         String?
+  emergencyName   String?
+  emergencyPhone  String?
+  comments        String?
+  costCentreId    Int?
+  costCentre      CostCentre?  @relation(fields: [costCentreId], references: [id], onDelete: SetNull)
+  active          Boolean      @default(true)
+  color           String?
+  lastLoginAt     DateTime?
+  legacyUserId    Int?         @unique // WordPress user id
+  legacyEmpId     Int?         @unique // wp_sj_employees.id
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  shifts          Shift[]
+  attendance      Attendance[]
+
+  @@index([active])
+}
+
+enum ShiftStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model Shift {
+  id           Int          @id @default(autoincrement())
+  employeeId   Int
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  costCentreId Int?
+  costCentre   CostCentre?  @relation(fields: [costCentreId], references: [id], onDelete: SetNull)
+  siteName     String
+  siteAddress  String?
+  siteLat      Float?
+  siteLng      Float?
+  date         String // YYYY-MM-DD, Sydney local
+  startTime    String // HH:MM
+  endTime      String // HH:MM (may be earlier than start for overnight shifts)
+  notes        String?
+  status       ShiftStatus  @default(SCHEDULED)
+  legacyId     Int?         @unique
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  attendance   Attendance[]
+
+  @@index([date])
+  @@index([employeeId, date])
+}
+
+enum AttendanceStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+
+model Attendance {
+  id              Int              @id @default(autoincrement())
+  employeeId      Int
+  employee        Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  shiftId         Int?
+  shift           Shift?           @relation(fields: [shiftId], references: [id], onDelete: SetNull)
+  signInAt        DateTime?
+  signInLat       Float?
+  signInLng       Float?
+  signInAccuracy  Float?
+  signInAddress   String?
+  signInDistance  Int? // metres from the site when signing in
+  signOutAt       DateTime?
+  signOutLat      Float?
+  signOutLng      Float?
+  signOutAccuracy Float?
+  signOutAddress  String?
+  signOutDistance Int?
+  notes           String?
+  status          AttendanceStatus @default(PENDING)
+  paid            Boolean          @default(false)
+  manual          Boolean          @default(false) // entered/edited by an admin
+  editedBy        String?
+  legacyId        Int?             @unique
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([employeeId, signInAt])
+  @@index([signInAt])
+  @@index([status])
+}

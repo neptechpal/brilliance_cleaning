@@ -14,7 +14,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
   const startToday = sydneyStartOfToday();
 
   const notSpam = { status: { not: "SPAM" as const } };
-  const [series, leads30, leads7, leadsToday, calls30, calls7, views30, won30, newCount, recent, channels, pages, settings, unsent] = await Promise.all([
+  const [series, leads30, leads7, leadsToday, calls30, calls7, views30, won30, newCount, recent, channels, pages, settings, unsent, newApps] = await Promise.all([
     daily(30),
     db.lead.count({ where: { createdAt: { gte: d30 }, ...notSpam } }),
     db.lead.count({ where: { createdAt: { gte: d7 }, ...notSpam } }),
@@ -29,6 +29,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
     pagePerformance(d30, 8),
     readSettings(),
     db.lead.count({ where: { emailSent: false, emailError: { not: null }, createdAt: { gte: d7 } } }),
+    db.staffApplication.count({ where: { status: "NEW" } }),
   ]);
   const conv = views30 ? (((leads30 + calls30) / views30) * 100).toFixed(1) : "0";
 
@@ -44,13 +45,14 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
         </Notice>
       )}
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
         <Stat label="New leads (open)" value={newCount} tone="coral" sub={<Link href="/admin/leads?status=NEW" className="underline">View</Link>} />
         <Stat label="Leads today" value={leadsToday} />
         <Stat label="Leads 7d / 30d" value={`${leads7} / ${leads30}`} tone="brand" />
         <Stat label="Call clicks 7d / 30d" value={`${calls7} / ${calls30}`} tone="brand" />
         <Stat label="Page views 30d" value={views30.toLocaleString()} />
         <Stat label="Conversion" value={`${conv}%`} sub={`${won30} won in 30d`} />
+        <Stat label="New staff applications" value={newApps} sub={<Link href="/admin/applications?status=NEW" className="underline">Review</Link>} />
       </div>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-3">

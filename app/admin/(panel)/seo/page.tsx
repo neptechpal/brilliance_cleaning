@@ -19,6 +19,7 @@ const FIXED = [
   { path: "/about", label: "About" },
   { path: "/faq", label: "FAQ" },
   { path: "/blog", label: "Blog index" },
+  { path: "/careers", label: "Careers" },
 ];
 
 export default async function SeoAudit({ searchParams }: PageProps<"/admin/seo">) {

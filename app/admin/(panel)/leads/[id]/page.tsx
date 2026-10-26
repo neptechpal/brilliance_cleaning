@@ -34,7 +34,7 @@ export default async function LeadPage({ params }: PageProps<"/admin/leads/[id]"
     ["Property", [lead.propertyType, lead.bedrooms != null && `${lead.bedrooms} bed`, lead.bathrooms != null && `${lead.bathrooms} bath`].filter(Boolean).join(" · ")],
     ["Preferred date", lead.preferredDate],
     ["Frequency", lead.frequency],
-    ["Add-ons", extras.join(", ")],
+    ["Add-ons / roles", extras.join(", ")],
     ["Form", lead.formType],
   ];
   const attribution: [string, React.ReactNode][] = [

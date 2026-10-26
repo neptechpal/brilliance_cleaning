@@ -34,8 +34,8 @@ export default async function AboutPage() {
           <div className="prose-content">
             <h2>What we do</h2>
             <p>
-              Hospitality is a big part of what we do — keeping pubs, restaurants, clubs and function venues clean, and supplying reliable staff when venues are
-              stretched. Alongside that, the same team delivers residential cleaning, end of lease cleans, commercial cleaning, post-construction cleaning and property staging.
+              Hospitality is a big part of what we do — keeping pubs, restaurants, clubs and function venues clean, and supplying chefs, cooks, kitchen hands and
+              cleaners when venues are stretched. Alongside that, the same team delivers residential cleaning, end of lease cleans, commercial cleaning, post-construction cleaning and property staging.
             </p>
             <p>
               Whether you&apos;re preparing a property for sale, moving out of a rental, opening a new fit-out or running a busy venue, we put together a package that

@@ -156,7 +156,7 @@ export default async function HomePage() {
             <h2 className="mt-5 text-2xl font-extrabold sm:text-3xl">Cleaning &amp; staff for hospitality venues</h2>
             <p className="mt-3 leading-relaxed text-white/80">
               Pubs, clubs, restaurants, cafés, hotels, function centres and Hunter Valley cellar doors. We handle after-close cleaning of kitchens, bars, floors and
-              amenities — and supply trained cleaning, housekeeping and venue support staff when you&apos;re short for a busy weekend, wedding season or event.
+              amenities — and supply chefs, cooks, kitchen hands and cleaners when you&apos;re short for a busy weekend, wedding season or event.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="/services/hospitality-cleaning" className="inline-flex items-center gap-1 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-ink hover:bg-brand-50">
@@ -164,6 +164,9 @@ export default async function HomePage() {
               </Link>
               <Link href="/services/hospitality-staffing" className="inline-flex items-center gap-1 rounded-full px-5 py-2.5 text-sm font-bold text-white ring-1 ring-white/30 hover:bg-white/10">
                 Hospitality staffing <ArrowRight className="size-4" aria-hidden />
+              </Link>
+              <Link href="/careers" className="inline-flex items-center gap-1 rounded-full px-5 py-2.5 text-sm font-bold text-brand-200 hover:text-white">
+                Work with us <ArrowRight className="size-4" aria-hidden />
               </Link>
             </div>
           </div>

@@ -24,7 +24,7 @@ const normalise = (p: string) => (p.length > 1 ? p.replace(/\/+$/, "") : p).toLo
 // The old WordPress site was injected with casino / betting / adult spam posts. Return 410 Gone so
 // Google drops them quickly instead of treating them as soft 404s.
 const SPAM = /(casino|kasyno|kasyna|1xbet|x3bet|betting|bukmacher|sportsbook|sportwetten|onlyfans|jackpot|gamstop|wager|slot-sites|aviator|krash|spinboss|monsterwin|slimking|boomzino|baxterbet|lolajack|zombillion|sankra|spinlander|pinocasino|goldbet|horus-casino|test-post|test123|upx-strategija|paris-hippiques|online-course|digital-marketing-courses|python-programming|art-and-design-courses|language-learning|new-hobbies|productivity-while|founding-of-youtube)/i;
-const WP_GONE = /^\/(wp-admin|wp-login\.php|xmlrpc\.php|wp-content\/plugins|wp-includes|feed|comments\/feed|author\/|category\/|tag\/|wp-sitemap|sitemap_index\.xml|cart-online-course|checkout-online-course|signup)/i;
+const WP_GONE = /^\/(wp-admin|wp-login\.php|xmlrpc\.php|wp-content\/plugins|wp-includes|feed|comments\/feed|author\/|category\/|tag\/|wp-sitemap|sitemap_index\.xml|cart-online-course|checkout-online-course)/i;
 
 function gone() {
   return new NextResponse("410 Gone", { status: 410, headers: { "Content-Type": "text/plain", "X-Robots-Tag": "noindex" } });

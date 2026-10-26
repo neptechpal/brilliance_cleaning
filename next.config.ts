@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   experimental: {
     agentFeedback: true,
+    // admin staff-photo uploads go through server actions
+    serverActions: { bodySizeLimit: "8mb" },
   },
   cacheComponents: true,
   // Off so dynamic pages await params at the top level: every URL gets its own fully rendered

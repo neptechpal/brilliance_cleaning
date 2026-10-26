@@ -7,6 +7,7 @@ import {
   BarChart3,
   BookOpen,
   Briefcase,
+  ChefHat,
   ExternalLink,
   FileSearch,
   HelpCircle,
@@ -33,6 +34,9 @@ const NAV = [
     { href: "/admin/calls", label: "Call clicks", icon: PhoneCall },
     { href: "/admin/traffic", label: "Traffic & conversions", icon: BarChart3 },
   ] },
+  { group: "Staffing", items: [
+    { href: "/admin/applications", label: "Staff applications", icon: ChefHat, badge: "apps" },
+  ] },
   { group: "Content", items: [
     { href: "/admin/services", label: "Services", icon: Briefcase },
     { href: "/admin/areas", label: "Areas / suburbs", icon: MapPin },
@@ -52,7 +56,7 @@ const NAV = [
   ] },
 ];
 
-export function Sidebar({ name, role, newLeads }: { name: string; role: string; newLeads: number }) {
+export function Sidebar({ name, role, newLeads, newApps }: { name: string; role: string; newLeads: number; newApps: number }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname === href || (pathname.startsWith(href + "/") && !(href === "/admin/seo" && /keywords|redirects/.test(pathname))));
@@ -80,7 +84,9 @@ export function Sidebar({ name, role, newLeads }: { name: string; role: string; 
                     >
                       <i.icon className="size-4" />
                       <span className="flex-1">{i.label}</span>
-                      {"badge" in i && newLeads > 0 && <span className="rounded-full bg-coral-600 px-1.5 text-[11px] font-bold text-white">{newLeads}</span>}
+                      {"badge" in i && (i.badge === "apps" ? newApps : newLeads) > 0 && (
+                        <span className="rounded-full bg-coral-600 px-1.5 text-[11px] font-bold text-white">{i.badge === "apps" ? newApps : newLeads}</span>
+                      )}
                     </Link>
                   </li>
                 ))}

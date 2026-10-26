@@ -8,6 +8,7 @@ import { beacon, getAttribution, trackLead } from "@/lib/track-client";
 type Opt = { slug: string; name: string };
 
 const EXTRAS = ["Oven", "Carpet steam clean", "Inside windows", "Walls / marks", "Blinds", "Fridge", "Balcony / patio", "Garage"];
+const STAFF_ROLES = ["Chef", "Cook", "Kitchen Hand", "Cleaner"];
 const RESIDENTIAL = ["end-of-lease-cleaning", "house-cleaning", "deep-cleaning", "pre-sale-cleaning", "airbnb-cleaning", "carpet-cleaning", "window-cleaning", "ndis-cleaning"];
 
 const input =
@@ -46,6 +47,8 @@ export function QuoteForm({
     frequency: "",
     preferredDate: "",
     extras: [] as string[],
+    staffRoles: [] as string[],
+    staffCount: "1",
     name: "",
     phone: "",
     email: "",
@@ -69,7 +72,8 @@ export function QuoteForm({
   };
 
   const isResidential = RESIDENTIAL.includes(f.serviceSlug);
-  const isRegular = f.serviceSlug === "house-cleaning" || f.serviceSlug === "commercial-cleaning" || f.serviceSlug === "hospitality-cleaning";
+  const isStaffing = f.serviceSlug === "hospitality-staffing";
+  const isRegular = ["house-cleaning", "commercial-cleaning", "hospitality-cleaning", "hospitality-staffing"].includes(f.serviceSlug);
   const serviceName = services.find((s) => s.slug === f.serviceSlug)?.name;
 
   async function submit(e: React.FormEvent) {
@@ -108,7 +112,7 @@ export function QuoteForm({
                 bathrooms: isResidential ? f.bathrooms : undefined,
                 frequency: f.frequency || undefined,
                 preferredDate: f.preferredDate || undefined,
-                extras: isResidential ? f.extras : undefined,
+                extras: isResidential ? f.extras : isStaffing ? [...f.staffRoles, `${f.staffCount} staff`] : undefined,
               }
             : {}),
           attribution: getAttribution(),
@@ -301,6 +305,39 @@ export function QuoteForm({
                       <option key={o} value={o}>
                         {o === "4" ? "4+" : o}
                       </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+            {isStaffing && (
+              <div className="grid gap-3 sm:grid-cols-[1fr_8rem]">
+                <fieldset>
+                  <legend className={labelCls}>Roles needed</legend>
+                  <div className="flex flex-wrap gap-2">
+                    {STAFF_ROLES.map((x) => {
+                      const on = f.staffRoles.includes(x);
+                      return (
+                        <button
+                          type="button"
+                          key={x}
+                          aria-pressed={on}
+                          onClick={() => set("staffRoles", on ? f.staffRoles.filter((y) => y !== x) : [...f.staffRoles, x])}
+                          className={`rounded-full border px-3.5 py-2 text-sm font-medium transition ${on ? "border-brand-600 bg-brand-600 text-white" : "border-line bg-white text-ink hover:border-brand-500"}`}
+                        >
+                          {x}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+                <div>
+                  <label className={labelCls} htmlFor="q-staff">
+                    How many?
+                  </label>
+                  <select id="q-staff" className={input} value={f.staffCount} onChange={(e) => set("staffCount", e.target.value)}>
+                    {["1", "2", "3", "4", "5", "6-10", "10+"].map((o) => (
+                      <option key={o}>{o}</option>
                     ))}
                   </select>
                 </div>

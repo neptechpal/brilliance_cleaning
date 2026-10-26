@@ -16,6 +16,7 @@ export async function GET() {
 - Service area: ${s.serviceAreaText}
 - Hours: ${s.hours}
 - Free quotes: ${absUrl("/quote")}
+- Jobs (chefs, cooks, kitchen hands, cleaners): ${absUrl("/careers")}
 
 ## Services
 ${services.map((x) => `- [${x.name}](${absUrl(`/services/${x.slug}`)}): ${x.summary ?? ""}`).join("\n")}

@@ -7,6 +7,7 @@ All site copy is seeded from JSON files in this folder (`content/*.json`) into P
 - Phone **0411 463 552** · Email admin@brillianceservices.com.au
 - Service area: **Newcastle and the Hunter Region, NSW** (Newcastle, Lake Macquarie, Maitland, Cessnock/Hunter Valley, Port Stephens, Singleton).
 - What they do: residential cleaning, end of lease (move-in / move-out) cleaning, commercial cleaning, post-construction cleaning, property staging, and **cleaning + staffing solutions for hospitality venues** (pubs, clubs, restaurants, cafés, hotels, function venues, wineries) across Newcastle and the Hunter.
+- Staffing roles (confirmed from their own signup form): **chefs, cooks, kitchen hands and cleaners** — labour hire, PAYG or ABN, casual / part-time / full-time / event shifts. Staff apply at `/careers`.
 - Numbers they publish: 50+ happy customers, 30+ staff.
 - Positioning they use: professional trained team, tailored packages, flexible scheduling around the client, "Let us handle the details so you don't have to".
 

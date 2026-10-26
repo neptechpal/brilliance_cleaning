@@ -38,6 +38,9 @@ export function Header({ s, services, hubs }: { s: SiteSettings; services: Servi
             Local cleaners servicing Newcastle, Lake Macquarie, Maitland, the Hunter Valley &amp; Port Stephens
           </p>
           <div className="flex items-center gap-5" data-track-label="topbar">
+            <Link href="/careers" className="font-semibold text-brand-200 hover:text-white">
+              Join our team
+            </Link>
             <a href={`mailto:${s.email}`} className="flex items-center gap-1.5 hover:text-white">
               <Mail className="size-3.5" aria-hidden />
               {s.email}

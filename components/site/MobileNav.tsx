@@ -86,6 +86,7 @@ export function MobileNav({
                   {[
                     ["/about", "About us"],
                     ["/blog", "Tips & guides"],
+                    ["/careers", "Careers"],
                     ["/faq", "FAQs"],
                     ["/contact", "Contact"],
                   ].map(([href, label]) => (
