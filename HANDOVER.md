@@ -34,21 +34,13 @@ The old WordPress site had two custom plugins the client actively uses. They are
    - Staff directory: on `/admin/applications` add **Active** toggle (controls the `/booking` picker; call `updateTag("staff")`), `source`, “Add staff manually” (`source: "admin"`, optional photo upload — server-action body limit already raised to 8 MB in `next.config.ts`), edit profile fields. `email`/`phone` are now nullable on `StaffApplication`.
 2. **Sidebar** (`components/admin/Sidebar.tsx`): add groups *Roster* (Overview, Weekly roster, Calendar, Attendance, Employees, Sites → `/admin/roster…`) and *Staffing* (Bookings, Staff & applications, Settings). Dashboard: count new staff bookings.
 3. **`/booking` redirect conflict**: seed + live DB still redirect `/booking` → `/quote`. Remove the row from `scripts/seed.ts` and run on each DB: `DELETE FROM "Redirect" WHERE "from" = '/booking';`. Add `/booking` to `app/sitemap.ts` and the SEO audit `FIXED` list. Add a “Book staff” CTA on the hospitality-staffing service page + header/footer.
-4. **WordPress data import** — write `scripts/import-wp.ts` reading `../wp-export/part1.json` and `../wp-export/part2-attendance.json` (**outside the repo — contains staff PII; never commit**). Mapping:
-   - `costCentres[]` → `CostCentre` (`legacyId`=ccId, radius=1000, geocode address with ≥1 s between Nominatim calls).
-   - `employees[]` (`empId` = old `wp_sj_employees.id`) → `Employee` (split name, `legacyEmpId`, cost centre by name, random temp password + `mustSetPassword: true`; write the temp passwords to `../wp-export/temp-passwords.txt` chmod 600 for the office to SMS out). Old WP password hashes were **not** extractable.
-   - `shifts[]` rows `[id, employee_id(=empId), site_name, site_address, date, start, end]` → `Shift` (`legacyId`; link cost centre by name when it matches; status `COMPLETED` if any attendance references it, else `SCHEDULED`).
-   - attendance rows `[id, wpUserId, name, shiftId, signIn, signOut, notes, site, inAddr, inLat, inLng, outAddr, outLat, outLng, status, paid]` → `Attendance`. Times are **Sydney-local strings** → `fromSydneyString()`. Match employee **by name** (WP user ids differ; Shishir Bastola has two ids, 12 and 16). Names `''`, `'Mahesh Sapkota'`, `'sulove3939'` (8 admin/test rows) → one inactive employee "Legacy admin/test". Status `Pending/Approved` → enum.
-   - `hosStaff[]` → `StaffApplication` (`source` form/admin, `active`, roles, expertise split on `,`, `locations`=areas, `legacyId`, signature = name, consent true). Download Mahesh's photo URL into storage as an `ApplicantFile` kind `photo`.
-   - `hosBookings[]` (2 test bookings by the owner) → `StaffBooking` with `legacyId` + activity.
-   - Make it idempotent (skip rows whose `legacyId` exists).
+4. ~~WordPress data import~~ — **cancelled by the client (2026-10-26): ignore the old WordPress site entirely.** No data import, no scraping; staff/sites/employees are entered fresh in the new admin.
 5. **Test in a browser** (desktop + 390 px): `/careers` submit with files, `/booking` estimate + submit, `/brilliance-roster` login → sign in/out (Chrome DevTools sensors can fake GPS), roster grid add/copy/paste, attendance approve + Excel export, sites geocode. Run `npx tsc --noEmit`, `npx eslint .`, `npx next build`.
 6. **Deploy** (after merging to `main`):
    - Server `.env`: add `STORAGE_DIR="/var/projects/brilliance-storage"` (create dir, chmod 700).
    - nginx `client_max_body_size 32M;` in the 443 block (applications allow 30 MB total), `nginx -t && systemctl reload nginx`.
    - `deploy.sh` runs `prisma db push`; this branch adds unique columns → it will ask for `--accept-data-loss` (tables are empty on staging, safe) — run `npx prisma db push --accept-data-loss` once manually.
    - `npx tsx scripts/seed.ts --force-slugs=hospitality-staffing,hospitality-staffing-hunter-valley-peak-season` (updated copy + 3 new service×area pages are created automatically).
-   - scp the two `wp-export` JSON files to the server, run the import, then **delete them from the server**.
 7. **Cut-over notes for the client**: staff keep using `/brilliance-roster`; give each their temp password. SMTP still not configured (`SMTP_*` in server `.env`) — booking/application/lead emails are skipped until set (data is always saved).
 
 ## 3. Facts gathered from the old site (already in code/content)
