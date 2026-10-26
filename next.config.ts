@@ -29,6 +29,9 @@ const nextConfig: NextConfig = {
         ],
       },
       { source: "/admin/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
+      ...(process.env.SITE_NOINDEX === "1" || process.env.SITE_NOINDEX === "true"
+        ? [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }]
+        : []),
     ];
   },
 };

@@ -4,6 +4,8 @@ import type { AreaT, PostT, QA, ServiceT } from "./data";
 
 export const SITE_URL = (process.env.SITE_URL || "https://brillianceservices.com.au").replace(/\/$/, "");
 export const BRAND = "Brilliance Cleaning";
+/** Staging / preview deployments (e.g. *.sahajilo.com) must never be indexed. */
+export const SITE_NOINDEX = process.env.SITE_NOINDEX === "1" || process.env.SITE_NOINDEX === "true";
 
 export function absUrl(path = "/") {
   return path.startsWith("http") ? path : `${SITE_URL}${path === "/" ? "" : path}`;
@@ -27,7 +29,7 @@ export function buildMetadata(opts: {
 }): Metadata {
   const title = fullTitle(opts.override?.metaTitle || opts.title);
   const description = opts.override?.metaDescription || opts.description;
-  const noindex = opts.override?.noindex || opts.noindex;
+  const noindex = SITE_NOINDEX || opts.override?.noindex || opts.noindex;
   return {
     title: { absolute: title },
     description,

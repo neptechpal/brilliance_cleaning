@@ -1,9 +1,12 @@
 import { createHash } from "node:crypto";
 
 export function clientIp(headers: Headers): string {
+  // nginx sets X-Real-IP to the connecting address; X-Forwarded-For can be spoofed by the client
+  const real = headers.get("x-real-ip");
+  if (real) return real.trim();
   const fwd = headers.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0].trim();
-  return headers.get("x-real-ip") || headers.get("cf-connecting-ip") || "0.0.0.0";
+  if (fwd) return fwd.split(",").pop()!.trim();
+  return headers.get("cf-connecting-ip") || "0.0.0.0";
 }
 
 export function hashIp(ip: string): string {

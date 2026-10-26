@@ -59,6 +59,7 @@ npx next start -p <port>        # behind nginx, systemd unit, certbot
 ```
 
 - `SITE_URL` must be the production origin **at build time** (canonicals, sitemap, schema).
+- Staging copies (e.g. brillianceservices.sahajilo.com) set `SITE_NOINDEX=1` so they never get indexed. Remove it on the real domain.
 - Behind nginx, pass `X-Forwarded-For` so rate limiting and IP hashing work.
 - Before DNS cutover: set up SMTP, add GA4/Ads IDs and the Search Console verification code in Admin → Settings.
 - After cutover: verify Search Console, submit `/sitemap.xml`, request indexing for the home and service pages, import into Bing Webmaster Tools.
