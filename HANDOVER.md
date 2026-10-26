@@ -4,6 +4,8 @@ Date: 2026-10-26. Branch with work in progress: **`wip/staffing-roster`**. `main
 
 Read first: `README.md` (stack, layout, lead capture, deploy), `docs/SEO-STRATEGY.md`, `content/BRIEF.md` (copy rules — **no unconfirmed claims**), and the Next.js 16 docs in `node_modules/next/dist/docs/` (this is Next 16 with Cache Components — APIs differ from older Next).
 
+> **Status 2026-10-26 (evening):** everything in this document is merged to `main` and deployed to https://brillianceservices.sahajilo.com — staffing admin, staff directory, `/booking`, `/careers`, roster admin and the `/brilliance-roster` staff portal. The WordPress data import has been run on the server (10 sites, 12 employees, 63 shifts, 166 attendance, 3 staff + photo, 2 bookings); the export files were deleted from the server and the staff temporary passwords handed to the client (`../wp-export/staff-portal-temp-passwords-LIVE.txt`, outside the repo). WordPress security findings are deliberately parked for now. Still open: SMTP credentials, a real address for the "DOE" site, real-device GPS check, and the production domain cut-over.
+
 ## 1. Where things stand
 
 ### Live (from `main`)
