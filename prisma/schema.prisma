@@ -1,0 +1,294 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         Role      @default(STAFF)
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+}
+
+// ─── Leads & tracking ────────────────────────────────────────────────
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  WON
+  LOST
+  SPAM
+}
+
+model Lead {
+  id            Int        @id @default(autoincrement())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  status        LeadStatus @default(NEW)
+  formType      String // quote | quick | contact | callback
+  name          String
+  phone         String
+  email         String?
+  suburb        String?
+  postcode      String?
+  serviceSlug   String?
+  serviceName   String?
+  propertyType  String?
+  bedrooms      Int?
+  bathrooms     Int?
+  preferredDate String?
+  frequency     String?
+  message       String?
+  extras        Json?
+  valueAud      Int? // quoted / won job value in dollars
+
+  // attribution
+  pagePath    String? // page the form was submitted on
+  landingPage String? // first page of the session
+  referrer    String?
+  channel     String? // google-organic | google-ads | bing-organic | facebook | direct | referral | email | other
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+  gclid       String?
+  fbclid      String?
+  msclkid     String?
+  firstTouch  Json? // { channel, source, medium, campaign, landingPage, referrer, at }
+  visitorId   String?
+  device      String?
+  userAgent   String?
+  ipHash      String?
+
+  spamReason String?
+  emailSent  Boolean    @default(false)
+  emailError String?
+  notes      LeadNote[]
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([channel])
+}
+
+model LeadNote {
+  id         Int      @id @default(autoincrement())
+  leadId     Int
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  body       String
+  authorName String?
+  createdAt  DateTime @default(now())
+
+  @@index([leadId])
+}
+
+// call_click | sms_click | email_click | whatsapp_click | quote_cta | form_start | pageview
+model TrackEvent {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  type        String
+  label       String? // where on the page: header, hero, sticky-mobile, footer, service-cta …
+  target      String? // phone number / email / href
+  pagePath    String
+  landingPage String?
+  referrer    String?
+  channel     String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  gclid       String?
+  visitorId   String?
+  device      String?
+  ipHash      String?
+
+  @@index([createdAt])
+  @@index([type, createdAt])
+  @@index([pagePath])
+}
+
+// ─── Content ─────────────────────────────────────────────────────────
+
+model Service {
+  id              Int      @id @default(autoincrement())
+  slug            String   @unique
+  name            String
+  category        String // residential | commercial | specialist
+  active          Boolean  @default(true)
+  featured        Boolean  @default(false)
+  sortOrder       Int      @default(0)
+  icon            String?
+  metaTitle       String?
+  metaDescription String?
+  h1              String?
+  heroIntro       String?
+  summary         String?
+  body            String   @default("")
+  inclusions      Json     @default("[]") // [{ area, items: [] }]
+  exclusions      String[]
+  process         Json     @default("[]") // [{ title, text }]
+  idealFor        String[]
+  faqs            Json     @default("[]") // [{ q, a }]
+  keywords        String[]
+  related         String[]
+  priceFrom       Int? // dollars, shown only when set
+  priceNote       String?
+  image           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Area {
+  id              Int      @id @default(autoincrement())
+  slug            String   @unique
+  name            String
+  region          String // hub slug
+  isHub           Boolean  @default(false)
+  postcode        String?
+  lat             Float?
+  lng             Float?
+  metaTitle       String?
+  metaDescription String?
+  h1              String?
+  intro           String   @default("")
+  localContent    String   @default("")
+  landmarks       String[]
+  nearby          String[]
+  topServices     String[]
+  faqs            Json     @default("[]")
+  active          Boolean  @default(true)
+  indexable       Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([region])
+}
+
+model ServiceArea {
+  id              Int      @id @default(autoincrement())
+  serviceSlug     String
+  areaSlug        String
+  metaTitle       String?
+  metaDescription String?
+  h1              String?
+  intro           String   @default("")
+  localTips       String[]
+  active          Boolean  @default(true)
+  indexable       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([serviceSlug, areaSlug])
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Post {
+  id              Int        @id @default(autoincrement())
+  slug            String     @unique
+  title           String
+  metaTitle       String?
+  metaDescription String?
+  excerpt         String?
+  category        String     @default("Guides")
+  tags            String[]
+  readMinutes     Int        @default(5)
+  body            String     @default("")
+  faqs            Json       @default("[]")
+  relatedServices String[]
+  coverImage      String?
+  authorName      String     @default("Brilliance Cleaning Team")
+  status          PostStatus @default(DRAFT)
+  publishedAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+model Faq {
+  id        Int     @id @default(autoincrement())
+  q         String
+  a         String
+  category  String  @default("General")
+  sortOrder Int     @default(0)
+  active    Boolean @default(true)
+}
+
+// Real customer reviews only (copied from Google Business Profile etc.)
+model Review {
+  id          Int       @id @default(autoincrement())
+  author      String
+  rating      Int       @default(5)
+  text        String
+  source      String    @default("Google")
+  reviewDate  DateTime?
+  suburb      String?
+  serviceSlug String?
+  active      Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+}
+
+// ─── SEO ─────────────────────────────────────────────────────────────
+
+model Redirect {
+  id        Int       @id @default(autoincrement())
+  from      String    @unique // path, e.g. /old-page
+  to        String? // null for 410
+  code      Int       @default(301) // 301 | 302 | 410
+  hits      Int       @default(0)
+  lastHitAt DateTime?
+  note      String?
+  createdAt DateTime  @default(now())
+}
+
+// Overrides for fixed pages (home, about, contact, …)
+model PageSeo {
+  id              Int      @id @default(autoincrement())
+  path            String   @unique
+  metaTitle       String?
+  metaDescription String?
+  noindex         Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
+}
+
+// Content strategy / keyword planner
+model Keyword {
+  id         Int      @id @default(autoincrement())
+  keyword    String   @unique
+  intent     String   @default("commercial") // local | commercial | informational | transactional
+  cluster    String? // e.g. "End of lease"
+  volume     Int?
+  difficulty Int?
+  targetUrl  String?
+  status     String   @default("IDEA") // IDEA | PLANNED | WRITING | PUBLISHED | RANKING
+  priority   Int      @default(2) // 1 high · 2 medium · 3 low
+  position   Float? // latest Google position (from Search Console)
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}

@@ -1,12 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   experimental: {
     agentFeedback: true,
   },
   cacheComponents: true,
-  partialPrefetching: true,
+  // Off so dynamic pages await params at the top level: every URL gets its own fully rendered
+  // ISR entry and unknown slugs return a real 404 status (better for crawlers than a streamed shell).
+  partialPrefetching: false,
+  poweredByHeader: false,
   turbopack: {
     rules: {
       "*.css": {
@@ -14,6 +16,20 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+      { source: "/admin/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
+    ];
   },
 };
 

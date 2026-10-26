@@ -1,0 +1,62 @@
+[
+  {
+    "q": "How do I book a clean?",
+    "a": "Call us on 0411 463 552, email admin@brillianceservices.com.au or use the quote form on this site. Tell us the type of clean, the size of the property, your suburb and your preferred dates, and we'll come back with a free, no-obligation quote. Once you're happy, we'll lock in a time.",
+    "category": "Booking"
+  },
+  {
+    "q": "Do you work on weekends?",
+    "a": "Yes. We offer flexible scheduling, including weekends, so we can work around your move, your business hours or your venue's trading times. End-of-month dates and the weeks before Christmas fill up early, so book as soon as you know your dates.",
+    "category": "Booking"
+  },
+  {
+    "q": "Which areas do you service?",
+    "a": "We're a local team covering Newcastle and the Hunter Region, including Newcastle, Lake Macquarie, Maitland, Cessnock and the Hunter Valley, Port Stephens and Singleton. If you're on the edge of these areas, call us and we'll let you know whether we can help.",
+    "category": "Booking"
+  },
+  {
+    "q": "Do I need to be home while you clean?",
+    "a": "No. Many clients leave a key, use a lockbox or arrange access through their real estate agent or building manager. We confirm access details before the job and lock up when we leave.",
+    "category": "Booking"
+  },
+  {
+    "q": "How much does a clean cost?",
+    "a": "Every job is quoted individually, because the price depends on the size of the property, its condition, the type of clean, any extras, and access and timing. Send us a few details or photos and we'll give you a free, no-obligation quote.",
+    "category": "Pricing"
+  },
+  {
+    "q": "Are your quotes free?",
+    "a": "Yes. Quotes are always free and there's no obligation to book. For larger commercial, hospitality, post-construction and staging jobs, we may suggest a walk-through first so the quote matches the job.",
+    "category": "Pricing"
+  },
+  {
+    "q": "Do you bring your own equipment and products?",
+    "a": "Yes. Our team brings the equipment and products needed for the job, so you don't need to supply anything. Eco-friendly products are available on request, and if you'd like us to use particular products on certain surfaces, just let us know.",
+    "category": "Our Team"
+  },
+  {
+    "q": "Who will be cleaning my property?",
+    "a": "Our professional, trained team of more than 30 local staff works across Newcastle and the Hunter. For regular cleans, we aim to keep the same people on your property where we can, so they get to know how you like things done.",
+    "category": "Our Team"
+  },
+  {
+    "q": "Do you clean to the real estate agent's checklist?",
+    "a": "Yes. Our end of lease cleaning follows the checklist real estate agents use, covering the kitchen, bathrooms, bedrooms, living areas, laundry, windows, tracks and floors. It helps to share your ingoing condition report and anything your agent has already mentioned.",
+    "category": "End of Lease"
+  },
+  {
+    "q": "What if my agent isn't happy after the final inspection?",
+    "a": "If your agent flags something that's on our checklist, contact us as soon as possible after the inspection and we'll work with you to put it right. Booking the clean close to your inspection date also helps, so the property is handed back fresh.",
+    "category": "End of Lease"
+  },
+  {
+    "q": "Can you clean our business outside trading hours?",
+    "a": "Yes. We schedule commercial and hospitality cleaning around your business, whether that's early mornings, evenings, overnight or weekends. We agree how keys, alarm codes and lock-up are handled before the first clean.",
+    "category": "Commercial"
+  },
+  {
+    "q": "Do you provide staff for hospitality venues?",
+    "a": "Yes. As well as venue cleaning, we supply trained cleaning, housekeeping and venue support staff to pubs, clubs, restaurants, hotels, function venues and wineries for regular shifts, peak seasons, events and wine-region weekends.",
+    "category": "Commercial"
+  }
+]
