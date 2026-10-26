@@ -1,14 +1,13 @@
-import { cookies } from "next/headers";
 import { db } from "@/lib/db";
-import { SESSION_COOKIE, verifySession } from "@/lib/jwt";
+import { getSession } from "@/lib/auth";
 import { readUpload } from "@/lib/storage";
 
 // Serves private applicant uploads (CVs, certificates, photos) to signed-in staff only.
 export async function GET(req: Request, { params }: RouteContext<"/api/admin/files/[id]">) {
-  const session = await verifySession((await cookies()).get(SESSION_COOKIE)?.value);
+  const session = await getSession();
   if (!session) return new Response("Unauthorized", { status: 401 });
   const id = Number((await params).id);
-  const file = Number.isFinite(id) ? await db.applicantFile.findUnique({ where: { id } }) : null;
+  const file = Number.isSafeInteger(id) && id > 0 ? await db.applicantFile.findUnique({ where: { id } }) : null;
   if (!file) return new Response("Not found", { status: 404 });
   let buf: Buffer;
   try {

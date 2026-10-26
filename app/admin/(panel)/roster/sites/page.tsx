@@ -7,17 +7,17 @@ import { RosterTabs } from "@/components/admin/RosterTabs";
 import { Area, Badge, Check, Field, Notice, PageHeader, Panel } from "@/components/admin/ui";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 
-const ERR: Record<string, string> = { name: "A site with that name already exists.", inuse: "Move its employees to another site before deleting it." };
+const ERR: Record<string, string> = { name: "A site with that name already exists.", inuse: "This site has employees or roster history. Deactivate it instead.", coordinates: "Enter a valid latitude (−90 to 90) and longitude (−180 to 180)." };
 
 export default async function SitesPage({ searchParams }: PageProps<"/admin/roster/sites">) {
-  await requireUser();
+  const user = await requireUser();
   const sp = await searchParams;
   const sites = await db.costCentre.findMany({ include: { _count: { select: { employees: true, shifts: true } } }, orderBy: [{ active: "desc" }, { name: "asc" }] });
   const form = (s?: (typeof sites)[number]) => (
     <form action={saveCostCentre} className="grid gap-3 sm:grid-cols-2">
       {s && <input type="hidden" name="id" value={s.id} />}
       <Field label="Name" name="name" required defaultValue={s?.name} />
-      <Field label="Geofence radius (metres)" name="geofenceRadius" type="number" min={0} defaultValue={s?.geofenceRadius ?? 200} hint="Staff must be within this distance to sign in. 0 turns it off." />
+      <Field label="Geofence radius (metres)" name="geofenceRadius" type="number" min={0} defaultValue={s?.geofenceRadius ?? 200} hint="Staff must be within this distance to sign in and out. 0 turns it off." />
       <Field label="Full address" name="address" className="sm:col-span-2" defaultValue={s?.address ?? ""} hint="Used for the map pin and geofence (looked up automatically)." />
       <Field label="Contact person" name="contactName" defaultValue={s?.contactName ?? ""} />
       <Field label="Contact phone" name="contactPhone" defaultValue={s?.contactPhone ?? ""} />
@@ -32,7 +32,7 @@ export default async function SitesPage({ searchParams }: PageProps<"/admin/rost
   );
   return (
     <>
-      <PageHeader title="Sites (cost centres)" intro="Schools, venues and other places your staff work. Each site's geofence controls where staff can sign in." />
+      <PageHeader title="Sites (cost centres)" intro="Schools, venues and other places your staff work. Each site's geofence controls where staff can sign in and out." />
       <RosterTabs active="/admin/roster/sites" />
       {sp.saved && <Notice>Saved{sp.nogeo ? " — but the address couldn't be found on the map. Enter latitude/longitude manually for the geofence to work." : "."}</Notice>}
       {sp.deleted && <Notice>Site deleted.</Notice>}
@@ -64,7 +64,7 @@ export default async function SitesPage({ searchParams }: PageProps<"/admin/rost
                 </summary>
                 <div className="border-t border-line p-4">
                   {form(s)}
-                  {s._count.employees === 0 && (
+                  {user.role === "ADMIN" && s._count.employees === 0 && s._count.shifts === 0 && (
                     <form action={deleteCostCentre} className="mt-3">
                       <input type="hidden" name="id" value={s.id} />
                       <SubmitButton variant="ghost" className="text-coral-600" confirm={`Delete ${s.name}?`}>

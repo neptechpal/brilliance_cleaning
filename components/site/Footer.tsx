@@ -69,6 +69,7 @@ export function Footer({ s, services, hubs }: { s: SiteSettings; services: Servi
               ["/about", "About us"],
               ["/quote", "Get a quote"],
               ["/blog", "Tips & guides"],
+              ["/booking", "Book hospitality staff"],
               ["/careers", "Careers – join our team"],
               ["/faq", "FAQs"],
               ["/contact", "Contact"],

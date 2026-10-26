@@ -76,7 +76,7 @@ export function BookingForm({ positions, multipliers, staff, allowPreference, po
         <CheckCircle2 className="mx-auto size-14 text-brand-600" aria-hidden />
         <h2 className="mt-4 text-2xl font-extrabold text-ink">Booking request received</h2>
         <p className="mx-auto mt-2 max-w-md text-ink-soft">
-          Thanks {f.contactName.split(" ")[0]} — we&apos;re organising staff for {f.venue} and will confirm as soon as possible. A copy of your request is on its way to {f.contactEmail}.
+          Thanks {f.contactName.split(" ")[0]} — we&apos;re organising staff for {f.venue} and will confirm as soon as possible. We will contact you at {f.contactEmail}.
         </p>
       </div>
     );
@@ -168,12 +168,12 @@ export function BookingForm({ positions, multipliers, staff, allowPreference, po
             </p>
             {est ? (
               <p className="mt-1 text-lg font-extrabold text-ink">
-                Estimate: ${est.total.toFixed(2)} <span className="text-sm font-semibold text-ink-soft">ex GST · {est.hours} h × {f.quantity || 1} staff</span>
+                Estimate: ${est.total.toFixed(2)} <span className="text-sm font-semibold text-ink-soft">ex GST · {Number(est.hours.toFixed(2))} h × {f.quantity || 1} staff</span>
               </p>
             ) : (
               <p className="mt-1 text-sm text-ink-soft">Add the date and times to see an estimate.</p>
             )}
-            <p className="mt-1 text-xs text-ink-soft">Weekend, public holiday, evening and night loadings are applied per the Hospitality Award. Final invoices use current Award values.</p>
+            <p className="mt-1 text-xs text-ink-soft">This estimate includes configured weekend, evening and night loadings. Our team confirms public holiday rates and other adjustments before final billing.</p>
           </>
         ) : (
           <p className="text-sm text-ink-soft">Prices exclude GST. Choose a position to see the rate and a live estimate.</p>

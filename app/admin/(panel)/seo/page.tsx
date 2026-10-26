@@ -19,6 +19,7 @@ const FIXED = [
   { path: "/about", label: "About" },
   { path: "/faq", label: "FAQ" },
   { path: "/blog", label: "Blog index" },
+  { path: "/booking", label: "Book hospitality staff" },
   { path: "/careers", label: "Careers" },
 ];
 

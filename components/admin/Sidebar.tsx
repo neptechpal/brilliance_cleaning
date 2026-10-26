@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
+  CalendarDays,
+  Clock,
+  ClipboardList,
   BarChart3,
   BookOpen,
   Briefcase,
@@ -34,8 +37,18 @@ const NAV = [
     { href: "/admin/calls", label: "Call clicks", icon: PhoneCall },
     { href: "/admin/traffic", label: "Traffic & conversions", icon: BarChart3 },
   ] },
+  { group: "Roster", items: [
+    { href: "/admin/roster", label: "Overview", icon: LayoutDashboard },
+    { href: "/admin/roster/schedule", label: "Weekly roster", icon: ClipboardList },
+    { href: "/admin/roster/calendar", label: "Calendar", icon: CalendarDays },
+    { href: "/admin/roster/attendance", label: "Attendance", icon: Clock },
+    { href: "/admin/roster/employees", label: "Employees", icon: Users },
+    { href: "/admin/roster/sites", label: "Sites", icon: MapPin },
+  ] },
   { group: "Staffing", items: [
-    { href: "/admin/applications", label: "Staff applications", icon: ChefHat, badge: "apps" },
+    { href: "/admin/staffing/bookings", label: "Bookings", icon: ClipboardList, badge: "bookings" },
+    { href: "/admin/applications", label: "Staff & applications", icon: ChefHat, badge: "apps" },
+    { href: "/admin/staffing/settings", label: "Settings", icon: Settings, admin: true },
   ] },
   { group: "Content", items: [
     { href: "/admin/services", label: "Services", icon: Briefcase },
@@ -56,10 +69,10 @@ const NAV = [
   ] },
 ];
 
-export function Sidebar({ name, role, newLeads, newApps }: { name: string; role: string; newLeads: number; newApps: number }) {
+export function Sidebar({ name, role, newLeads, newApps, newBookings }: { name: string; role: string; newLeads: number; newApps: number; newBookings: number }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname === href || (pathname.startsWith(href + "/") && !(href === "/admin/seo" && /keywords|redirects/.test(pathname))));
+  const isActive = (href: string) => ((href === "/admin" || href === "/admin/roster") ? pathname === "/admin" : pathname === href || (pathname.startsWith(href + "/") && !(href === "/admin/seo" && /keywords|redirects/.test(pathname))));
 
   const nav = (
     <nav className="flex h-full flex-col">
@@ -84,8 +97,8 @@ export function Sidebar({ name, role, newLeads, newApps }: { name: string; role:
                     >
                       <i.icon className="size-4" />
                       <span className="flex-1">{i.label}</span>
-                      {"badge" in i && (i.badge === "apps" ? newApps : newLeads) > 0 && (
-                        <span className="rounded-full bg-coral-600 px-1.5 text-[11px] font-bold text-white">{i.badge === "apps" ? newApps : newLeads}</span>
+                      {"badge" in i && (i.badge === "bookings" ? newBookings : i.badge === "apps" ? newApps : newLeads) > 0 && (
+                        <span className="rounded-full bg-coral-600 px-1.5 text-[11px] font-bold text-white">{i.badge === "bookings" ? newBookings : i.badge === "apps" ? newApps : newLeads}</span>
                       )}
                     </Link>
                   </li>

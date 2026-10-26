@@ -11,10 +11,10 @@ export const metadata: Metadata = { title: { absolute: "Admin | Brilliance" }, r
 
 async function Shell({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  const [newLeads, newApps] = await Promise.all([db.lead.count({ where: { status: "NEW" } }), db.staffApplication.count({ where: { status: "NEW" } })]);
+  const [newLeads, newApps, newBookings] = await Promise.all([db.lead.count({ where: { status: "NEW" } }), db.staffApplication.count({ where: { status: "NEW" } }), db.staffBooking.count({ where: { status: "NEW" } })]);
   return (
     <div className="min-h-screen bg-sand">
-      <Sidebar name={user.name} role={user.role} newLeads={newLeads} newApps={newApps} />
+      <Sidebar name={user.name} role={user.role} newLeads={newLeads} newApps={newApps} newBookings={newBookings} />
       <div className="lg:pl-60">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">{children}</div>
       </div>

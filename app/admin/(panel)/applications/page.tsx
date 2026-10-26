@@ -4,7 +4,10 @@ import { Download, Phone } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { APPLICATION_STATUSES, QUALIFICATIONS, ROLES } from "@/lib/staffing";
-import { Badge, Notice, PageHeader, Table, fmtDate, td } from "@/components/admin/ui";
+import { Badge, LinkBtn, Notice, PageHeader, Table, fmtDate, td } from "@/components/admin/ui";
+
+import { setApplicationActive } from "@/app/admin/actions/applications";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 
 const PER = 50;
 const TONE: Record<string, string> = { NEW: "NEW", REVIEWING: "CONTACTED", INTERVIEW: "QUOTED", APPROVED: "WON", REJECTED: "LOST", ARCHIVED: "SPAM" };
@@ -16,7 +19,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
   const role = typeof sp.role === "string" ? sp.role : "";
   const qual = typeof sp.qual === "string" ? sp.qual : "";
   const q = typeof sp.q === "string" ? sp.q.trim() : "";
-  const page = Math.max(1, Number(sp.page) || 1);
+  const page = Math.max(1, Math.floor(Number(sp.page) || 1));
 
   const where: Prisma.StaffApplicationWhereInput = {
     ...(status ? { status } : { status: { notIn: ["ARCHIVED", "REJECTED"] } }),
@@ -52,18 +55,19 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
   return (
     <>
       <PageHeader
-        title="Staff applications"
-        intro="Applications from the Join our team page (/careers). CVs and certificates are stored privately on the server."
-        actions={
+        title="Staff & applications"
+        intro="Hospitality staff directory and applications. Active profiles appear in the public booking picker."
+        actions={<>
+          <LinkBtn href="/admin/applications/new">Add staff</LinkBtn>
           <a href={`/api/admin/applications/export${qs({})}`} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3.5 py-2 text-sm font-semibold text-ink hover:bg-sand">
             <Download className="size-4" /> Export CSV
-          </a>
+          </a></>
         }
       />
       {sp.deleted && <Notice>Application deleted (including its files).</Notice>}
       <div className="mb-4 flex flex-wrap gap-2">
         <Link href={`/admin/applications${qs({ status: undefined })}`} className={`rounded-full px-3 py-1.5 text-sm font-semibold ${!status ? "bg-ink text-white" : "bg-white text-ink ring-1 ring-line"}`}>
-          Active
+          Current applications
         </Link>
         {APPLICATION_STATUSES.map((s) => (
           <Link key={s} href={`/admin/applications${qs({ status: s })}`} className={`rounded-full px-3 py-1.5 text-sm font-semibold ${status === s ? "bg-ink text-white" : "bg-white text-ink ring-1 ring-line"}`}>
@@ -88,7 +92,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
         </select>
         <button className="rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-white">Filter</button>
       </form>
-      <Table head={["Applied", "Applicant", "Roles", "Areas", "Availability", "Status"]} empty={apps.length ? undefined : "No applications match."}>
+      <Table head={["Applied", "Applicant", "Roles", "Areas", "Availability", "Status", "Source", "Active"]} empty={apps.length ? undefined : "No applications match."}>
         {apps.map((a) => (
           <tr key={a.id} className={a.status === "NEW" ? "bg-coral-50/40" : ""}>
             <td className={`${td} whitespace-nowrap text-ink-soft`}>{fmtDate(a.createdAt)}</td>
@@ -107,9 +111,9 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
                   {a.firstName} {a.lastName}
                 </span>
               </Link>
-              <a href={`tel:${(a.phone ?? "").replace(/\s/g, "")}`} className="mt-0.5 flex items-center gap-1 pl-[2.6rem] text-xs text-ink-soft hover:text-coral-600">
+              {a.phone && <a href={`tel:${(a.phone ?? "").replace(/\s/g, "")}`} className="mt-0.5 flex items-center gap-1 pl-[2.6rem] text-xs text-ink-soft hover:text-coral-600">
                 <Phone className="size-3" /> {a.phone}
-              </a>
+              </a>}
             </td>
             <td className={td}>{a.roles.join(", ") || "—"}</td>
             <td className={`${td} max-w-[12rem] truncate`}>{a.locations}</td>
@@ -118,6 +122,11 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
               <Badge tone={TONE[a.status]}>{a.status}</Badge>
               {a.rating ? <span className="ml-1 text-xs text-amber-500">{"★".repeat(a.rating)}</span> : null}
             </td>
+            <td className={td}>{a.source}</td>
+            <td className={td}><form action={setApplicationActive}>
+              <input type="hidden" name="id" value={a.id} /><input type="hidden" name="active" value={String(!a.active)} />
+              <SubmitButton variant={a.active ? "primary" : "ghost"}>{a.active ? "Active — deactivate" : "Inactive — activate"}</SubmitButton>
+            </form></td>
           </tr>
         ))}
       </Table>

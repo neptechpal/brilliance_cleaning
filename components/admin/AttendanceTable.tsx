@@ -29,6 +29,8 @@ export type AttRow = {
   manual: boolean;
 };
 
+import { sydneyDate } from "@/lib/sydney";
+
 type Opt = { id: number; label: string };
 
 export function AttendanceTable({ rows, employees, shifts }: { rows: AttRow[]; employees: Opt[]; shifts: (Opt & { employeeId: number; date: string })[] }) {
@@ -70,7 +72,7 @@ export function AttendanceTable({ rows, employees, shifts }: { rows: AttRow[]; e
   return (
     <>
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <button onClick={() => setEdit({ date: new Date().toISOString().slice(0, 10), signIn: "05:00", signOut: "09:00" })} className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+        <button onClick={() => setEdit({ date: sydneyDate(), signIn: "05:00", signOut: "09:00" })} className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">
           <Plus className="size-4" /> Manual entry
         </button>
         <button disabled={!sel.length || pending} onClick={() => act(() => setAttendanceStatus(sel, "APPROVED"))} className="inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-3 py-2 text-sm font-semibold text-brand-700 ring-1 ring-brand-200 disabled:opacity-50">

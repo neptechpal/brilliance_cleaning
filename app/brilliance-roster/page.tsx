@@ -21,15 +21,15 @@ async function PortalContent() {
 
   const today = sydneyDate();
   const [open, todayShifts, upcoming, history] = await Promise.all([
-    db.attendance.findFirst({ where: { employeeId: emp.id, signOutAt: null }, include: { shift: true }, orderBy: { signInAt: "desc" } }),
-    db.shift.findMany({ where: { employeeId: emp.id, date: today, status: "SCHEDULED" }, include: { costCentre: true }, orderBy: { startTime: "asc" } }),
+    db.attendance.findFirst({ where: { employeeId: emp.id, signOutAt: null, signInAt: { not: null } }, include: { shift: true }, orderBy: { signInAt: "desc" } }),
+    db.shift.findMany({ where: { employeeId: emp.id, OR: [{ date: today }, { date: addDays(today, -1), endTime: { gt: sydneyTime() } }], status: "SCHEDULED" }, include: { costCentre: true }, orderBy: { startTime: "asc" } }),
     db.shift.findMany({ where: { employeeId: emp.id, date: { gte: today, lte: addDays(today, 30) }, status: "SCHEDULED" }, include: { costCentre: true }, orderBy: [{ date: "asc" }, { startTime: "asc" }], take: 20 }),
-    db.attendance.findMany({ where: { employeeId: emp.id, signOutAt: { not: null } }, include: { shift: true }, orderBy: { signInAt: "desc" }, take: 30 }),
+    db.attendance.findMany({ where: { employeeId: emp.id, signOutAt: { not: null }, signInAt: { not: null } }, include: { shift: true }, orderBy: { signInAt: "desc" }, take: 30 }),
   ]);
   const site = (s: (typeof todayShifts)[number]) => ({
-    lat: s.siteLat ?? s.costCentre?.lat ?? null,
-    lng: s.siteLng ?? s.costCentre?.lng ?? null,
-    radius: s.costCentre?.geofenceRadius ?? emp.costCentre?.geofenceRadius ?? 0,
+    lat: s.costCentre?.lat ?? s.siteLat ?? null,
+    lng: s.costCentre?.lng ?? s.siteLng ?? null,
+    radius: s.costCentre?.geofenceRadius ?? 200,
   });
   const h = Number(sydneyTime().slice(0, 2));
 
@@ -49,7 +49,7 @@ async function PortalContent() {
             }
           : null
       }
-      todayShifts={todayShifts.map((s) => ({
+      todayShifts={todayShifts.filter((s) => s.date === today || s.endTime <= s.startTime).map((s) => ({
         id: s.id,
         site: s.siteName,
         address: s.siteAddress,

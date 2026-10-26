@@ -63,7 +63,8 @@ export default async function ServicePage({ params }: PageProps<"/services/[serv
                 ))}
               </ul>
             )}
-            <div className="mt-8" data-track-label="service-hero">
+            <div className="mt-8 flex flex-wrap gap-3" data-track-label="service-hero">
+              {sv.slug === "hospitality-staffing" && <Link href="/booking" className="inline-flex items-center justify-center rounded-full bg-brand-600 px-6 py-3 font-bold text-white hover:bg-brand-700">Book hospitality staff</Link>}
               <CallButton phone={s.phone} display={`Call ${s.phoneDisplay}`} label="service-hero" size="lg" />
             </div>
           </div>

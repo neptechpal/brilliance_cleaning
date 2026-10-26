@@ -6,27 +6,32 @@ import { db } from "@/lib/db";
 import { channelLabel } from "@/lib/attribution";
 import { APPLICATION_STATUSES, DAY_PARTS, DAYS } from "@/lib/staffing";
 import { addApplicationNote, deleteApplication, updateApplication } from "@/app/admin/actions/applications";
-import { Badge, PageHeader, Panel, Select, fmtDate } from "@/components/admin/ui";
+import { Badge, Notice, PageHeader, Panel, Select, fmtDate } from "@/components/admin/ui";
 import { SubmitButton } from "@/components/admin/SubmitButton";
+
+import { StaffProfileForm } from "@/components/admin/StaffProfileForm";
 
 const TONE: Record<string, string> = { NEW: "NEW", REVIEWING: "CONTACTED", INTERVIEW: "QUOTED", APPROVED: "WON", REJECTED: "LOST", ARCHIVED: "SPAM" };
 const kb = (n: number) => (n > 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : `${Math.round(n / 1024)} KB`);
 
-export default async function ApplicationPage({ params }: PageProps<"/admin/applications/[id]">) {
+export default async function ApplicationPage({ params, searchParams }: PageProps<"/admin/applications/[id]">) {
   const user = await requireUser();
   const id = Number((await params).id);
-  if (!Number.isFinite(id)) notFound();
+  if (!Number.isSafeInteger(id) || id < 1) notFound();
   const a = await db.staffApplication.findUnique({
     where: { id },
     include: { files: { orderBy: { id: "asc" } }, notes: { orderBy: { createdAt: "desc" } } },
   });
   if (!a) notFound();
+  const sp = await searchParams;
   const photo = a.files.find((f) => f.kind === "photo");
   const docs = a.files.filter((f) => f.kind !== "photo");
   const tel = (a.phone ?? "").replace(/\s/g, "");
   const avail = new Set(a.availability);
 
   const details: [string, React.ReactNode][] = [
+    ["Source", a.source],
+    ["Active", a.active ? "Yes" : "No"],
     ["Roles", a.roles.join(", ")],
     ["Area of expertise", a.expertise.join(", ")],
     ["Qualifications", a.qualifications.join(", ")],
@@ -72,23 +77,25 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/appl
             }
             actions={
               <>
-                <a href={`tel:${tel}`} className="inline-flex items-center gap-1.5 rounded-lg bg-coral-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-coral-700">
+                {a.phone && <><a href={`tel:${tel}`} className="inline-flex items-center gap-1.5 rounded-lg bg-coral-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-coral-700">
                   <Phone className="size-4" /> {a.phone}
                 </a>
                 <a href={`sms:${tel}`} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3.5 py-2 text-sm font-semibold text-ink hover:bg-sand">
                   <MessageSquare className="size-4" /> SMS
-                </a>
-                <a href={`mailto:${a.email}`} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3.5 py-2 text-sm font-semibold text-ink hover:bg-sand">
+                </a></>}
+                {a.email && <a href={`mailto:${a.email}`} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3.5 py-2 text-sm font-semibold text-ink hover:bg-sand">
                   <Mail className="size-4" /> {a.email}
-                </a>
+                </a>}
               </>
             }
           />
         </div>
       </div>
 
+      {sp.saved && <Notice>Staff profile saved.</Notice>}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
+          <Panel title="Edit profile"><StaffProfileForm staff={a} /></Panel>
           <Panel title="Experience">
             <p className="whitespace-pre-wrap text-sm text-ink">{a.experience}</p>
           </Panel>

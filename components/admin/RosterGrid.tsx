@@ -42,7 +42,9 @@ export function RosterGrid({
   const open = (employeeId: number, date: string, shift?: Shift) => {
     if (clip && !shift) {
       start(async () => {
-        await saveShift({ employeeId, date, costCentreId: clip.costCentreId, siteName: clip.siteName, siteAddress: clip.siteAddress ?? "", startTime: clip.startTime, endTime: clip.endTime, notes: clip.notes ?? "" });
+        const res = await saveShift({ employeeId, date, costCentreId: clip.costCentreId, siteName: clip.siteName, siteAddress: clip.siteAddress ?? "", startTime: clip.startTime, endTime: clip.endTime, notes: clip.notes ?? "" });
+        if (!res.ok) return setError(res.error || "Could not paste shift");
+        setError("");
         router.refresh();
       });
       return;
@@ -84,7 +86,10 @@ export function RosterGrid({
 
   const remove = () =>
     start(async () => {
-      if (modal?.shift) await deleteShift(modal.shift.id);
+      if (modal?.shift) {
+        const res = await deleteShift(modal.shift.id);
+        if (!res.ok) return setError(res.error || "Could not cancel shift");
+      }
       setModal(null);
       router.refresh();
     });
@@ -94,6 +99,7 @@ export function RosterGrid({
 
   return (
     <>
+      {error && !modal && <p role="alert" className="mb-3 text-sm text-coral-700">{error}</p>}
       <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
         {clip ? (
           <span className="inline-flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-1.5 font-semibold text-amber-800 ring-1 ring-amber-200">
@@ -109,7 +115,9 @@ export function RosterGrid({
           onClick={() =>
             start(async () => {
               if (!window.confirm("Copy all shifts from last week into this week?")) return;
-              await copyWeek(prevMonday, days[0].date);
+              const res = await copyWeek(prevMonday, days[0].date);
+              if (!res.ok) return setError(res.error || "Could not copy week");
+              setError("");
               router.refresh();
             })
           }

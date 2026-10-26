@@ -6,7 +6,7 @@ import { readSettings } from "./settings";
 import { fillBookingTemplate, readStaffingSettings } from "./staffing-settings";
 import { fmtDay } from "./sydney";
 
-type Activity = { at: string; actor: string; type: string; message: string };
+export type Activity = { at: string; actor: string; type: string; message: string };
 
 function transport() {
   if (!process.env.SMTP_HOST) return null;
@@ -21,10 +21,19 @@ function transport() {
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 const asHtml = (body: string) => `<div style="font-family:Arial,sans-serif;max-width:600px;white-space:pre-wrap;line-height:1.5">${esc(body)}</div>`;
 
-export async function logActivity(id: number, entry: Omit<Activity, "at">) {
-  const b = await db.staffBooking.findUnique({ where: { id }, select: { activity: true } });
-  const list = (Array.isArray(b?.activity) ? b!.activity : []) as Activity[];
-  await db.staffBooking.update({ where: { id }, data: { activity: [...list, { at: new Date().toISOString(), ...entry }] as unknown as Prisma.InputJsonValue } });
+export async function logActivity(id: number, entry: Omit<Activity, "at">, client: Prisma.TransactionClient = db) {
+  // Append in SQL so simultaneous emails, notes and status updates cannot lose entries.
+  const value = JSON.stringify([{ at: new Date().toISOString(), ...entry }]);
+  await client.$executeRaw`UPDATE "StaffBooking"
+    SET activity = (CASE WHEN jsonb_typeof(activity) = 'array' THEN activity ELSE '[]'::jsonb END) || ${value}::jsonb,
+        "updatedAt" = NOW()
+    WHERE id = ${id}`;
+}
+
+export function bookingActivity(value: Prisma.JsonValue): Activity[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((v): v is Activity => !!v && typeof v === "object" && !Array.isArray(v)
+    && typeof v.at === "string" && typeof v.actor === "string" && typeof v.type === "string" && typeof v.message === "string");
 }
 
 function vars(b: Awaited<ReturnType<typeof db.staffBooking.findUniqueOrThrow>>, siteName: string) {
@@ -48,7 +57,7 @@ function vars(b: Awaited<ReturnType<typeof db.staffBooking.findUniqueOrThrow>>, 
 export async function sendBookingEmails(id: number) {
   try {
     const t = transport();
-    if (!t) return logActivity(id, { actor: "system", type: "email", message: "Emails not sent — SMTP not configured" });
+    if (!t) return await logActivity(id, { actor: "system", type: "email", message: "Emails not sent — SMTP not configured" });
     const [b, s, site] = await Promise.all([db.staffBooking.findUniqueOrThrow({ where: { id } }), readStaffingSettings(), readSettings()]);
     const v = vars(b, site.businessName);
     const from = process.env.MAIL_FROM || "Brilliance Website <no-reply@brillianceservices.com.au>";
@@ -64,7 +73,7 @@ export async function sendBookingEmails(id: number) {
     });
     await logActivity(id, { actor: "system", type: "email", message: `Office notified (${office.join(", ")})` });
     await t.sendMail({
-      from: `${s.confirmFromName} <${(from.match(/<(.+)>/) ?? [])[1] ?? from}>`,
+      from: { name: s.confirmFromName, address: from.match(/<([^>]+)>/)?.[1] ?? from },
       to: b.contactEmail,
       replyTo: s.notifyEmail || site.email,
       subject: fillBookingTemplate(s.ackSubject, v),
@@ -82,13 +91,14 @@ export async function sendBookingMail(id: number, opts: { kind: "confirmation" }
   if (!t) return { ok: false, error: "SMTP isn't configured on the server yet." };
   const [b, s, site] = await Promise.all([db.staffBooking.findUniqueOrThrow({ where: { id } }), readStaffingSettings(), readSettings()]);
   const v = vars(b, site.businessName);
-  const fromAddr = ((process.env.MAIL_FROM || "").match(/<(.+)>/) ?? [])[1] ?? "no-reply@brillianceservices.com.au";
+  const configuredFrom = process.env.MAIL_FROM || "no-reply@brillianceservices.com.au";
+  const fromAddr = configuredFrom.match(/<([^>]+)>/)?.[1] ?? configuredFrom;
   const msg =
     opts.kind === "confirmation"
       ? { to: b.contactEmail, subject: fillBookingTemplate(s.confirmSubject, v), body: fillBookingTemplate(s.confirmBody, v) }
       : { to: opts.to, subject: opts.subject, body: opts.body };
   try {
-    await t.sendMail({ from: `${s.confirmFromName} <${fromAddr}>`, to: msg.to, replyTo: s.notifyEmail || site.email, subject: msg.subject, html: asHtml(msg.body) });
+    await t.sendMail({ from: { name: s.confirmFromName, address: fromAddr }, to: msg.to, replyTo: s.notifyEmail || site.email, subject: msg.subject, html: asHtml(msg.body) });
     await logActivity(id, { actor, type: "email", message: `${opts.kind === "confirmation" ? "Confirmation" : "Email"} sent to ${msg.to}: ${msg.subject}` });
     return { ok: true };
   } catch (e) {

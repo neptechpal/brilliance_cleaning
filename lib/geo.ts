@@ -29,3 +29,18 @@ export function mapsLink(lat?: number | null, lng?: number | null, address?: str
   if (address) return `https://www.google.com/maps/search/${encodeURIComponent(address)}`;
   return null;
 }
+
+export type LocationFix = { lat: number | null; lng: number | null; accuracy: number | null };
+export type Geofence = { lat: number | null; lng: number | null; radius: number };
+
+/** A configured fence requires both a site pin and a valid GPS fix. */
+export function checkGeofence(site: Geofence, loc: LocationFix) {
+  const distance = loc.lat != null && loc.lng != null && site.lat != null && site.lng != null
+    ? distanceMeters(loc.lat, loc.lng, site.lat, site.lng) : null;
+  if (site.radius <= 0) return { distance };
+  if (site.lat == null || site.lng == null) return { distance, error: "This site's map pin is missing. Please contact the office." };
+  if (distance == null) return { distance, error: "Location is required at this site. Please allow location access." };
+  const slack = Math.min(Math.max(loc.accuracy ?? 0, 0), 150);
+  if (distance > site.radius + slack) return { distance, error: `You're about ${distance >= 1000 ? `${(distance / 1000).toFixed(1)} km` : `${distance} m`} from the site. You need to be within ${site.radius} m.` };
+  return { distance };
+}

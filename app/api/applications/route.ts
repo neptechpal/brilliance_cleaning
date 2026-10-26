@@ -33,7 +33,7 @@ const Schema = z.object({
     .max(30)
     .refine((v) => v.replace(/\D/g, "").length >= 8, "Please enter a valid phone number"),
   experience: z.string().trim().min(3, "Please describe your experience").max(3000),
-  roles: z.array(z.enum(ROLES)).max(4),
+  roles: z.array(z.enum(ROLES)).min(1, "Choose at least one role").max(4),
   expertise: z.array(z.string().trim().min(1).max(40)).min(1, "Add at least one area of expertise").max(25),
   qualifications: z.array(z.string()).max(20).transform((a) => a.filter((q) => QUALIFICATIONS.includes(q))),
   workRights: opt().refine((v) => !v || WORK_RIGHTS.includes(v), "Invalid option"),
@@ -69,6 +69,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Too many submissions — please try again later." }, { status: 429 });
   }
 
+  const length = Number(req.headers.get("content-length"));
+  if (Number.isFinite(length) && length > MAX_TOTAL + 1024 * 1024) return NextResponse.json({ ok: false, error: "Files are too large in total (max 30 MB)." }, { status: 413 });
   let fd: FormData;
   try {
     fd = await req.formData();
@@ -119,6 +121,7 @@ export async function POST(req: Request) {
   const a = (d.attribution ?? {}) as Record<string, string | undefined>;
   const ua = req.headers.get("user-agent") || "";
   const stored: string[] = [];
+  let persisted = false;
   try {
     const saved = [];
     for (const p of prepared) {
@@ -166,6 +169,7 @@ export async function POST(req: Request) {
       },
     });
 
+    persisted = true;
     if (!spamReason) {
       after(async () => {
         const res = await sendApplicationNotification(appRow, await readSettings());
@@ -174,8 +178,8 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({ ok: true, id: appRow.id });
   } catch (e) {
-    await Promise.all(stored.map(deleteUpload));
-    console.error("application save failed", e);
+    if (!persisted) await Promise.all(stored.map(deleteUpload));
+    console.error("application save failed", e instanceof Error ? e.name : "unknown");
     return NextResponse.json({ ok: false, error: "We couldn't save your application. Please try again or call us." }, { status: 500 });
   }
 }

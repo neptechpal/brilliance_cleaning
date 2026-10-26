@@ -3,17 +3,13 @@
 
 export const TZ = "Australia/Sydney";
 
+const formatter = new Intl.DateTimeFormat("en-AU", {
+  timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit",
+  hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
+});
+
 function parts(d: Date) {
-  const p = new Intl.DateTimeFormat("en-AU", {
-    timeZone: TZ,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(d);
+  const p = formatter.formatToParts(d);
   const get = (t: string) => p.find((x) => x.type === t)?.value ?? "00";
   return { y: get("year"), m: get("month"), d: get("day"), h: get("hour"), mi: get("minute"), s: get("second") };
 }
@@ -30,20 +26,34 @@ export function sydneyTime(d: Date = new Date()) {
   return `${x.h}:${x.mi}`;
 }
 
-/** Converts a Sydney wall-clock date + time to the real instant (handles AEST/AEDT). */
+export function validDate(date: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date < "1900-01-01") return false;
+  const d = new Date(`${date}T12:00:00Z`);
+  return Number.isFinite(d.getTime()) && d.toISOString().slice(0, 10) === date;
+}
+
+export function validTime(time: string) {
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(time);
+}
+
+/** Converts Sydney wall time. Rejects DST gaps; repeated times use the earlier instant. */
 export function fromSydney(date: string, time = "00:00", seconds = 0): Date {
+  if (!validDate(date) || !validTime(time) || !Number.isInteger(seconds) || seconds < 0 || seconds > 59) throw new RangeError("Invalid Sydney date or time");
   const [y, m, d] = date.split("-").map(Number);
   const [h, mi] = time.split(":").map(Number);
-  const guess = Date.UTC(y, m - 1, d, h, mi, seconds);
-  // offset = wall-clock(guess in Sydney) - guess
-  const w = parts(new Date(guess));
-  const wall = Date.UTC(+w.y, +w.m - 1, +w.d, +w.h, +w.mi, +w.s);
-  const offset = wall - guess;
-  const t = guess - offset;
-  // second pass fixes the hour around DST changes
-  const w2 = parts(new Date(t));
-  const wall2 = Date.UTC(+w2.y, +w2.m - 1, +w2.d, +w2.h, +w2.mi, +w2.s);
-  return new Date(t - (wall2 - guess));
+  const wall = Date.UTC(y, m - 1, d, h, mi, seconds);
+  const offsets = new Set<number>();
+  for (const delta of [-36, 0, 36]) {
+    const instant = wall + delta * 3600000;
+    const p = parts(new Date(instant));
+    offsets.add(Date.UTC(+p.y, +p.m - 1, +p.d, +p.h, +p.mi, +p.s) - instant);
+  }
+  const candidates = [...offsets].map((offset) => new Date(wall - offset)).filter((instant) => {
+    const p = parts(instant);
+    return `${p.y}-${p.m}-${p.d}` === date && `${p.h}:${p.mi}` === time && +p.s === seconds;
+  }).sort((a, b) => a.getTime() - b.getTime());
+  if (!candidates.length) throw new RangeError("This Sydney time does not exist because the clocks move forward");
+  return candidates[0];
 }
 
 /** Parses a WordPress "YYYY-MM-DD HH:MM:SS" Sydney-local string. */

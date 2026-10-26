@@ -31,24 +31,26 @@ function shortAddress(n: { address?: Record<string, string>; display_name?: stri
 function useLocation() {
   const [fix, setFix] = useState<Fix | null>(null);
   const [state, setState] = useState<"idle" | "locating" | "ok" | "denied" | "unavailable">("idle");
-  const locate = useCallback(() => {
-    if (!navigator.geolocation) return setState("unavailable");
+  const locate = useCallback((): Promise<Fix | null> => new Promise((resolve) => {
+    if (!navigator.geolocation) { setState("unavailable"); resolve(null); return; }
     setState("locating");
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude: lat, longitude: lng, accuracy } = pos.coords;
         let address = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
         try {
-          const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`);
+          const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`, { signal: AbortSignal.timeout(3000) });
           address = shortAddress(await r.json()) || address;
         } catch {}
-        setFix({ lat, lng, accuracy, address });
+        const next = { lat, lng, accuracy, address };
+        setFix(next);
         setState("ok");
+        resolve(next);
       },
-      () => setState("denied"),
+      () => { setFix(null); setState("denied"); resolve(null); },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
     );
-  }, []);
+  }), []);
   return { fix, state, locate };
 }
 
@@ -102,7 +104,8 @@ export function Portal(props: {
   const doSignIn = () =>
     start(async () => {
       setError("");
-      const res = await signIn({ shiftId: shiftId || null, ...(fix ?? {}) });
+      const fresh = await locate();
+      const res = await signIn({ shiftId: shiftId || null, ...(fresh ?? {}) });
       if (!res.ok) return setError(res.error ?? "Could not sign in");
       router.refresh();
     });
@@ -110,7 +113,8 @@ export function Portal(props: {
     start(async () => {
       setError("");
       if (!props.open) return;
-      const res = await signOut({ attendanceId: props.open.id, notes, ...(fix ?? {}) });
+      const fresh = await locate();
+      const res = await signOut({ attendanceId: props.open.id, notes, ...(fresh ?? {}) });
       if (!res.ok) return setError(res.error ?? "Could not sign out");
       router.refresh();
     });
@@ -225,7 +229,7 @@ export function Portal(props: {
               </p>
             )}
             {(state === "denied" || (fix && !inside)) && (
-              <button onClick={locate} className="mt-2 text-sm font-semibold text-brand-700 underline">
+              <button onClick={() => { void locate(); }} className="mt-2 text-sm font-semibold text-brand-700 underline">
                 Try again
               </button>
             )}

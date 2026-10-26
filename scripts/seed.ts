@@ -232,7 +232,6 @@ async function seedKeywords() {
 async function seedRedirects() {
   // URLs from the old WordPress site that had real pages
   const rows = [
-    { from: "/booking", to: "/quote", code: 301, note: "Old WP booking page" },
     { from: "/signup", to: "/careers", code: 301, note: "Old WP staff signup form" },
     { from: "/join-our-team", to: "/careers", code: 301, note: "Friendly URL" },
     { from: "/home", to: "/", code: 301, note: "Old WP" },

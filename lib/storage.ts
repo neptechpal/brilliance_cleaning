@@ -2,6 +2,7 @@ import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 
+// Runtime uploads are provisioned separately; never include them in build tracing.
 // Private uploads (CVs, certificates, profile photos). Never under /public — served only through
 // the authenticated /api/admin/files/[id] route.
 export const STORAGE_DIR = process.env.STORAGE_DIR || join(process.cwd(), "storage");
@@ -22,16 +23,16 @@ export function sniff(buf: Buffer, allowed: string[]) {
 export async function saveUpload(buf: Buffer, ext: string) {
   await mkdir(STORAGE_DIR, { recursive: true, mode: 0o700 });
   const storedName = `${randomUUID()}.${ext}`;
-  await writeFile(join(STORAGE_DIR, storedName), buf, { mode: 0o600 });
+  await writeFile(join(/* turbopackIgnore: true */ STORAGE_DIR, storedName), buf, { mode: 0o600 });
   return storedName;
 }
 
 export async function readUpload(storedName: string) {
   if (!/^[0-9a-f-]{36}\.(pdf|png|jpg|webp)$/.test(storedName)) throw new Error("bad name");
-  return readFile(join(STORAGE_DIR, storedName));
+  return readFile(/* turbopackIgnore: true */ join(/* turbopackIgnore: true */ STORAGE_DIR, storedName));
 }
 
 export async function deleteUpload(storedName: string) {
   if (!/^[0-9a-f-]{36}\.(pdf|png|jpg|webp)$/.test(storedName)) return;
-  await unlink(join(STORAGE_DIR, storedName)).catch(() => {});
+  await unlink(join(/* turbopackIgnore: true */ STORAGE_DIR, storedName)).catch(() => {});
 }
