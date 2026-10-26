@@ -96,8 +96,9 @@ export async function signOut(input: Loc & { attendanceId: number; notes?: strin
     const site = att.shift
       ? { lat: att.shift.costCentre?.lat ?? att.shift.siteLat, lng: att.shift.costCentre?.lng ?? att.shift.siteLng, radius: att.shift.costCentre?.geofenceRadius ?? 200 }
       : { lat: emp.costCentre?.lat ?? null, lng: emp.costCentre?.lng ?? null, radius: emp.costCentre?.geofenceRadius ?? 200 };
-    const { distance, error } = checkGeofence(site, loc);
-    if (error) return { ok: false, error };
+    // Sign-out is never blocked (staff who leave before signing out must still be able to finish);
+    // the distance from the site is recorded so admins can review it on the timesheet.
+    const { distance } = checkGeofence(site, loc);
     await tx.attendance.update({
       where: { id: att.id },
       data: {
