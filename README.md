@@ -48,6 +48,10 @@ The seed creates the first admin from `ADMIN_EMAIL` / `ADMIN_PASSWORD`, or gener
 5. Conversions fire `generate_lead` (GA4 + dataLayer), the Google Ads lead conversion (deduplicated by `transaction_id`) and Meta `Lead`, then redirect to `/thank-you` (noindex).
 6. The team's own browsing while logged into `/admin` isn't counted.
 
+## Live (staging)
+
+https://brillianceservices.sahajilo.com on `root@46.250.244.227` — code `/var/projects/brilliance`, `.env` there (`SITE_NOINDEX=1`), systemd `brilliance.service` (port 3011), nginx vhost `brillianceservices.sahajilo.com` + certbot. Update: `ssh root@46.250.244.227 /var/projects/brilliance/deploy.sh` after pushing to `main`.
+
 ## Deploy (self-hosted)
 
 ```bash
