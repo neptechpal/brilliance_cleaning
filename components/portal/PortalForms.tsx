@@ -17,7 +17,7 @@ function Shell({ title, sub, children }: { title: string; sub: string; children:
         <h1 className="mt-4 text-center text-2xl font-extrabold text-ink">{title}</h1>
         <p className="mt-1 text-center text-sm text-ink-soft">{sub}</p>
         {children}
-        <p className="mt-6 text-center text-xs text-ink-soft">Brilliance Roster · Brilliance Cleaning &amp; Property Staging</p>
+        <p className="mt-6 text-center text-xs text-ink-soft">Brilliance Roster · Brilliance Cleaning Services</p>
       </div>
     </div>
   );

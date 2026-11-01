@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: "Cleaning Tips, Checklists & Cost Guides",
     description:
-      "Practical cleaning advice for Newcastle and Hunter homes, rentals and venues: end of lease checklists, price guides, property staging and hospitality tips.",
+      "Practical cleaning advice for Newcastle and Hunter homes, rentals and venues: end of lease checklists, price guides, selling tips and hospitality advice.",
     path: "/blog",
     override: await getPageSeo("/blog"),
   });

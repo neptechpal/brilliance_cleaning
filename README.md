@@ -1,4 +1,4 @@
-# Brilliance Cleaning & Property Staging — website + admin
+# Brilliance Cleaning Services — website + admin
 
 Replacement for the WordPress site at brillianceservices.com.au. Goal: win leads from organic search across Newcastle and the Hunter, capture every enquiry and phone tap, and give the team an admin panel to manage leads, content and SEO.
 

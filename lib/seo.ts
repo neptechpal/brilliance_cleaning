@@ -40,7 +40,7 @@ export function buildMetadata(opts: {
       url: absUrl(opts.path),
       title,
       description,
-      siteName: "Brilliance Cleaning & Property Staging",
+      siteName: "Brilliance Cleaning Services",
       locale: "en_AU",
       ...(opts.publishedTime ? { publishedTime: opts.publishedTime } : {}),
       ...(opts.modifiedTime ? { modifiedTime: opts.modifiedTime } : {}),
@@ -91,7 +91,7 @@ export function businessJsonLd(s: SiteSettings, hubs: AreaT[], services: Service
     },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
-      name: "Cleaning & property staging services",
+      name: "Cleaning & hospitality staffing services",
       itemListElement: services.map((sv) => ({
         "@type": "Offer",
         itemOffered: { "@type": "Service", name: sv.name, url: absUrl(`/services/${sv.slug}`) },

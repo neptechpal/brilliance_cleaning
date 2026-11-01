@@ -1,11 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Menu, Phone, X } from "lucide-react";
+import { MapPin, Menu, Phone, X } from "lucide-react";
 
 type Item = { slug: string; name: string };
+type ServiceItem = Item & { icon?: ReactNode };
+type Group = { id: string; title: string; icon?: ReactNode; items: ServiceItem[] };
+
+/** Section label — small caps with an accent icon and a divider, so it can't be mistaken for a link. */
+function GroupLabel({ id, icon, children }: { id: string; icon?: ReactNode; children: ReactNode }) {
+  return (
+    <p id={id} className="mb-1.5 flex items-center gap-2 border-b border-line pb-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-brand-700">
+      {icon}
+      {children}
+    </p>
+  );
+}
 
 export function MobileNav({
   phone,
@@ -15,7 +27,7 @@ export function MobileNav({
 }: {
   phone: string;
   phoneDisplay: string;
-  groups: { title: string; items: Item[] }[];
+  groups: Group[];
   hubs: Item[];
 }) {
   const [open, setOpen] = useState(false);
@@ -57,12 +69,20 @@ export function MobileNav({
               {/* close the menu as soon as any link inside it is followed */}
               <nav className="flex-1 space-y-6 px-5 py-5" aria-label="Mobile" onClick={(e) => (e.target as Element).closest("a") && setOpen(false)}>
                 {groups.map((g) => (
-                  <div key={g.title}>
-                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-ink-soft">{g.title}</p>
-                    <ul className="grid gap-1">
+                  <div key={g.id}>
+                    <GroupLabel id={`m-nav-group-${g.id}`} icon={g.icon}>
+                      {g.title}
+                    </GroupLabel>
+                    <ul aria-labelledby={`m-nav-group-${g.id}`} className="grid gap-0.5">
                       {g.items.map((i) => (
                         <li key={i.slug}>
-                          <Link href={`/services/${i.slug}`} className="block rounded-lg px-2 py-2 font-medium text-ink hover:bg-brand-50">
+                          <Link
+                            href={`/services/${i.slug}`}
+                            className="flex items-center gap-3 rounded-lg px-2 py-2 font-medium text-ink active:bg-brand-50 hover:bg-brand-50 hover:text-brand-700"
+                          >
+                            {i.icon && (
+                              <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-sand text-ink-soft ring-1 ring-line">{i.icon}</span>
+                            )}
                             {i.name}
                           </Link>
                         </li>
@@ -71,11 +91,13 @@ export function MobileNav({
                   </div>
                 ))}
                 <div>
-                  <p className="mb-2 text-xs font-bold uppercase tracking-wider text-ink-soft">Areas</p>
-                  <ul className="grid grid-cols-2 gap-1">
+                  <GroupLabel id="m-nav-group-areas" icon={<MapPin className="size-4 text-coral-500" aria-hidden />}>
+                    Areas
+                  </GroupLabel>
+                  <ul aria-labelledby="m-nav-group-areas" className="grid grid-cols-2 gap-0.5">
                     {hubs.map((h) => (
                       <li key={h.slug}>
-                        <Link href={`/areas/${h.slug}`} className="block rounded-lg px-2 py-2 text-sm font-medium text-ink hover:bg-brand-50">
+                        <Link href={`/areas/${h.slug}`} className="block rounded-lg px-2 py-2 text-sm font-medium text-ink active:bg-brand-50 hover:bg-brand-50 hover:text-brand-700">
                           {h.name}
                         </Link>
                       </li>

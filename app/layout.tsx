@@ -14,9 +14,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
   return {
     metadataBase: new URL(SITE_URL),
-    title: { default: "Cleaning & Property Staging Newcastle | Brilliance Cleaning", template: "%s" },
+    title: { default: "Cleaning Services Newcastle & Hunter | Brilliance Cleaning", template: "%s" },
     description:
-      "Residential, end of lease, commercial and hospitality cleaning plus property staging across Newcastle and the Hunter. Free quotes – call 0411 463 552.",
+      "House, end of lease, pre-sale, commercial and hospitality cleaning plus venue staffing across Newcastle and the Hunter. Free quotes – call 0411 463 552.",
     applicationName: s.businessName,
     formatDetection: { telephone: false },
     verification: {

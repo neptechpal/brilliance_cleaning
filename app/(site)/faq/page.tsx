@@ -8,7 +8,7 @@ import { Breadcrumbs, Container, FaqList, JsonLd } from "@/components/site/ui";
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: "Cleaning FAQs | Newcastle & Hunter",
-    description: "Answers to common questions about booking, pricing, end of lease cleaning, commercial cleaning and property staging with Brilliance Cleaning.",
+    description: "Answers to common questions about booking, pricing, end of lease cleaning, commercial cleaning and venue staffing with Brilliance Cleaning.",
     path: "/faq",
     override: await getPageSeo("/faq"),
   });

@@ -87,7 +87,7 @@ export function WhyUs({ s }: { s: SiteSettings }) {
     { icon: MapPin, title: "Genuinely local", text: "We live and work in Newcastle and the Hunter, so we know the housing, the agents and the venues." },
     { icon: ClipboardCheck, title: "Checklist-driven", text: "Every job runs to a written checklist — the same standard real estate agents and venue managers inspect against." },
     { icon: CalendarCheck, title: "Works around you", text: "Early starts, after-close venue cleans and weekend bookings, scheduled around your keys, trade or open home." },
-    { icon: Sparkles, title: "Cleaning + staging + staff", text: "One team for the clean, the styling and the venue shifts — fewer contractors to juggle." },
+    { icon: Sparkles, title: "Cleaning + venue staff", text: "One team for the clean and the venue shifts — fewer contractors to juggle." },
     { icon: Leaf, title: "Eco options on request", text: "Prefer low-tox products for kids, pets or allergies? Just ask when you book." },
     s.trustReclean
       ? { icon: ShieldCheck, title: "We put it right", text: "If something on the agreed checklist was missed, tell us and we'll come back and fix it." }

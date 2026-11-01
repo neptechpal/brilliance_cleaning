@@ -49,7 +49,7 @@ type FaqIn = { q: string; a: string; category?: string };
 
 const SERVICE_ORDER = [
   "end-of-lease-cleaning", "house-cleaning", "deep-cleaning", "pre-sale-cleaning", "commercial-cleaning", "hospitality-cleaning",
-  "hospitality-staffing", "post-construction-cleaning", "property-staging", "airbnb-cleaning", "carpet-cleaning", "window-cleaning", "ndis-cleaning",
+  "hospitality-staffing", "post-construction-cleaning", "airbnb-cleaning", "carpet-cleaning", "window-cleaning", "ndis-cleaning",
 ];
 const HUB_ORDER = ["newcastle", "lake-macquarie", "maitland", "hunter-valley", "port-stephens", "singleton"];
 
@@ -165,7 +165,7 @@ async function seedKeywords() {
   const primary: Record<string, string> = {
     "end-of-lease-cleaning": "end of lease cleaning", "house-cleaning": "house cleaning", "deep-cleaning": "deep cleaning",
     "pre-sale-cleaning": "pre sale cleaning", "commercial-cleaning": "commercial cleaning", "hospitality-cleaning": "restaurant cleaning",
-    "hospitality-staffing": "hospitality staffing", "post-construction-cleaning": "builders cleaning", "property-staging": "property staging",
+    "hospitality-staffing": "hospitality staffing", "post-construction-cleaning": "builders cleaning",
   };
   const list: { keyword: string; intent: string; cluster: string; targetUrl?: string; status: string; priority: number; notes?: string }[] = [];
   for (const s of services) {
@@ -197,8 +197,8 @@ async function seedKeywords() {
     ["kitchen hand jobs newcastle", "local", "Careers", 2, "/careers"],
     ["cleaning jobs newcastle", "local", "Careers", 2, "/careers"],
     ["hospitality jobs hunter valley", "local", "Careers", 3, "/careers"],
-    ["home staging newcastle", "local", "Property Staging", 1, "/services/property-staging"],
-    ["home staging cost newcastle", "commercial", "Property Staging", 2],
+    ["cleaning before selling house newcastle", "local", "Pre-Sale Cleaning", 1, "/services/pre-sale-cleaning"],
+    ["pre sale cleaning cost newcastle", "commercial", "Pre-Sale Cleaning", 2],
     ["after builders clean newcastle", "local", "Post-Construction Cleaning", 2, "/services/post-construction-cleaning"],
     ["airbnb cleaning port stephens", "local", "Airbnb & Holiday Rental Cleaning", 2, undefined],
     ["airbnb cleaning newcastle", "local", "Airbnb & Holiday Rental Cleaning", 2, undefined],
@@ -211,7 +211,7 @@ async function seedKeywords() {
     ["oven cleaning tips end of lease", "informational", "End of Lease Cleaning", 3],
     ["office cleaning checklist", "informational", "Commercial & Office Cleaning", 3],
     ["restaurant cleaning checklist nsw", "informational", "Hospitality Venue Cleaning", 3],
-    ["how to prepare house for sale photos", "informational", "Property Staging", 3],
+    ["how to prepare house for sale photos", "informational", "Pre-Sale Cleaning", 3, "/blog/pre-sale-cleaning-checklist-newcastle"],
   ];
   for (const [keyword, intent, cluster, priority, url] of extra) {
     list.push({ keyword, intent, cluster, priority, targetUrl: url, status: url ? "PUBLISHED" : "IDEA" });
@@ -237,7 +237,13 @@ async function seedRedirects() {
     { from: "/home", to: "/", code: 301, note: "Old WP" },
     { from: "/residential-cleaning", to: "/services/house-cleaning", code: 301, note: "Old service name" },
     { from: "/commercial-cleaning", to: "/services/commercial-cleaning", code: 301, note: "Old service name" },
-    { from: "/property-staging", to: "/services/property-staging", code: 301, note: "Old service name" },
+    { from: "/property-staging", to: "/services/pre-sale-cleaning", code: 301, note: "Old WP page; property staging discontinued" },
+    // Property staging was dropped in Nov 2026 (see scripts/remove-staging.ts, which also fixes existing databases)
+    { from: "/services/property-staging", to: "/services/pre-sale-cleaning", code: 301, note: "Property staging discontinued" },
+    ...["newcastle", "lake-macquarie", "maitland", "hunter-valley", "port-stephens"].map((hub) => ({
+      from: `/services/property-staging/${hub}`, to: `/services/pre-sale-cleaning/${hub}`, code: 301, note: "Property staging discontinued",
+    })),
+    { from: "/blog/does-property-staging-help-sell-newcastle", to: "/blog/pre-sale-cleaning-checklist-newcastle", code: 301, note: "Staging post replaced" },
     { from: "/move-in-move-out-cleaning", to: "/services/end-of-lease-cleaning", code: 301, note: "Old service name" },
     { from: "/post-construction-cleaning", to: "/services/post-construction-cleaning", code: 301, note: "Old service name" },
   ];

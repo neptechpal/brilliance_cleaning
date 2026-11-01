@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: "About Us | Local Newcastle Cleaning Team",
     description:
-      "Meet Brilliance Cleaning & Property Staging: a Newcastle team providing cleaning, property staging and hospitality staffing across the Hunter Region.",
+      "Meet Brilliance Cleaning Services: a Newcastle team providing home, commercial and hospitality cleaning plus venue staffing across the Hunter Region.",
     path: "/about",
     override: await getPageSeo("/about"),
   });
@@ -24,8 +24,8 @@ export default async function AboutPage() {
           <Breadcrumbs items={[{ name: "About", path: "/about" }]} />
           <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">A local team that handles the details</h1>
           <p className="mt-5 text-lg leading-relaxed text-ink-soft">
-            Brilliance Cleaning &amp; Property Staging looks after homes, workplaces and hospitality venues across Newcastle and the Hunter Region. Our job is simple:
-            take the cleaning, styling and staffing off your plate, and do it properly.
+            Brilliance Cleaning Services looks after homes, workplaces and hospitality venues across Newcastle and the Hunter Region. Our job is simple:
+            take the cleaning and staffing off your plate, and do it properly.
           </p>
         </Container>
       </section>
@@ -35,7 +35,7 @@ export default async function AboutPage() {
             <h2>What we do</h2>
             <p>
               Hospitality is a big part of what we do — keeping pubs, restaurants, clubs and function venues clean, and supplying chefs, cooks, kitchen hands and
-              cleaners when venues are stretched. Alongside that, the same team delivers residential cleaning, end of lease cleans, commercial cleaning, post-construction cleaning and property staging.
+              cleaners when venues are stretched. Alongside that, the same team delivers residential cleaning, end of lease and pre-sale cleans, commercial cleaning and post-construction cleaning.
             </p>
             <p>
               Whether you&apos;re preparing a property for sale, moving out of a rental, opening a new fit-out or running a busy venue, we put together a package that
@@ -55,7 +55,7 @@ export default async function AboutPage() {
                 <strong>Flexible scheduling</strong>, including early mornings, late nights and weekends.
               </li>
               <li>
-                <strong>One point of contact</strong> for cleaning, staging and staffing.
+                <strong>One point of contact</strong> for cleaning and staffing.
               </li>
             </ul>
           </div>

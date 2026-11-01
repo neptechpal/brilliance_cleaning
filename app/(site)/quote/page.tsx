@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: "Get a Free Cleaning Quote | Newcastle & Hunter",
     description:
-      "Request a free, no-obligation quote for end of lease, house, commercial or venue cleaning or property staging in Newcastle & the Hunter. Fast reply.",
+      "Request a free, no-obligation quote for end of lease, house, commercial or pre-sale or venue cleaning in Newcastle & the Hunter. Fast reply.",
     path: "/quote",
     override: await getPageSeo("/quote"),
   });

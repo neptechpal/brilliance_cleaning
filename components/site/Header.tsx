@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowRight, Building2, ChevronDown, HardHat, Home, Mail, MapPin, Phone } from "lucide-react";
 import type { AreaT, ServiceT } from "@/lib/data";
 import type { SiteSettings } from "@/lib/settings";
-import { Container } from "./ui";
+import { Container, Icon } from "./ui";
 import { MobileNav } from "./MobileNav";
 
 export function Logo({ className = "" }: { className?: string }) {
@@ -15,7 +15,7 @@ export function Logo({ className = "" }: { className?: string }) {
           Brilliance<span className="text-brand-600"> Cleaning</span>
         </span>
         <span className="mt-1 block text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-ink-soft">
-          &amp; Property Staging
+          Services
         </span>
       </span>
     </Link>
@@ -24,9 +24,9 @@ export function Logo({ className = "" }: { className?: string }) {
 
 export function Header({ s, services, hubs }: { s: SiteSettings; services: ServiceT[]; hubs: AreaT[] }) {
   const groups = [
-    { title: "Home cleaning", items: services.filter((x) => x.category === "residential") },
-    { title: "Business & venues", items: services.filter((x) => x.category === "commercial") },
-    { title: "Specialist", items: services.filter((x) => x.category === "specialist") },
+    { id: "residential", title: "Home cleaning", icon: Home, items: services.filter((x) => x.category === "residential") },
+    { id: "commercial", title: "Business & venues", icon: Building2, items: services.filter((x) => x.category === "commercial") },
+    { id: "specialist", title: "Specialist", icon: HardHat, items: services.filter((x) => x.category === "specialist") },
   ].filter((g) => g.items.length);
 
   return (
@@ -61,22 +61,43 @@ export function Header({ s, services, hubs }: { s: SiteSettings; services: Servi
             <Link href="/services" className="flex items-center gap-1 rounded-lg px-3 py-2 font-semibold text-ink hover:text-brand-700">
               Services <ChevronDown className="size-4 transition group-hover:rotate-180" aria-hidden />
             </Link>
-            <div className="invisible absolute left-1/2 top-full w-[40rem] -translate-x-1/2 pt-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-              <div className="grid grid-cols-3 gap-6 rounded-2xl border border-line bg-white p-6 shadow-xl">
-                {groups.map((g) => (
-                  <div key={g.title}>
-                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-ink-soft">{g.title}</p>
-                    <ul className="space-y-1.5">
-                      {g.items.map((it) => (
-                        <li key={it.slug}>
-                          <Link href={`/services/${it.slug}`} className="text-sm font-medium text-ink hover:text-brand-700">
-                            {it.name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+            <div className="invisible absolute left-0 top-full w-[46rem] -translate-x-28 pt-2 xl:left-1/2 xl:-translate-x-1/2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+              <div className="rounded-2xl border border-line bg-white shadow-xl">
+                <div className="grid grid-cols-3 gap-x-6 gap-y-5 p-6">
+                  {groups.map((g) => (
+                    <div key={g.id}>
+                      {/* group label: a heading, not a link — small caps, accent icon and a divider so it never reads as a menu item */}
+                      <p
+                        id={`nav-group-${g.id}`}
+                        className="mb-2 flex items-center gap-2 border-b border-line pb-2.5 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-brand-700"
+                      >
+                        <g.icon className="size-4 text-coral-500" aria-hidden />
+                        {g.title}
+                      </p>
+                      <ul aria-labelledby={`nav-group-${g.id}`} className="-mx-2 space-y-0.5">
+                        {g.items.map((it) => (
+                          <li key={it.slug}>
+                            <Link
+                              href={`/services/${it.slug}`}
+                              className="group/item flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm font-medium text-ink transition hover:bg-brand-50 hover:text-brand-700 focus-visible:bg-brand-50 focus-visible:text-brand-700"
+                            >
+                              <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-sand text-ink-soft ring-1 ring-line transition group-hover/item:bg-white group-hover/item:text-brand-600">
+                                <Icon name={it.icon} className="size-4" />
+                              </span>
+                              {it.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between rounded-b-2xl border-t border-line bg-sand px-6 py-3 text-sm">
+                  <span className="text-ink-soft">Not sure what you need? We&apos;ll quote it for free.</span>
+                  <Link href="/services" className="inline-flex items-center gap-1 font-bold text-brand-700 hover:text-brand-900">
+                    All services <ArrowRight className="size-4" aria-hidden />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -140,7 +161,12 @@ export function Header({ s, services, hubs }: { s: SiteSettings; services: Servi
           <MobileNav
             phone={s.phone}
             phoneDisplay={s.phoneDisplay}
-            groups={groups.map((g) => ({ title: g.title, items: g.items.map((i) => ({ slug: i.slug, name: i.name })) }))}
+            groups={groups.map((g) => ({
+              id: g.id,
+              title: g.title,
+              icon: <g.icon className="size-4 text-coral-500" aria-hidden />,
+              items: g.items.map((i) => ({ slug: i.slug, name: i.name, icon: <Icon name={i.icon} className="size-4" /> })),
+            }))}
             hubs={hubs.map((h) => ({ slug: h.slug, name: h.name }))}
           />
         </div>

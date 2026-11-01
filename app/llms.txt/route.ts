@@ -8,7 +8,7 @@ export async function GET() {
   const hubs = areas.filter((a) => a.isHub);
   const body = `# ${s.businessName}
 
-> Local cleaning, property staging and hospitality staffing company servicing Newcastle and the Hunter Region, NSW, Australia.
+> Local cleaning and hospitality staffing company servicing Newcastle and the Hunter Region, NSW, Australia.
 
 - Phone: ${s.phoneDisplay}
 - Email: ${s.email}

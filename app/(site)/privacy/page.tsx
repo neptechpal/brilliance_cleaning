@@ -5,7 +5,7 @@ import { Breadcrumbs, Container } from "@/components/site/ui";
 
 export const metadata: Metadata = buildMetadata({
   title: "Privacy Policy",
-  description: "How Brilliance Cleaning & Property Staging collects, uses and protects your personal information.",
+  description: "How Brilliance Cleaning Services collects, uses and protects your personal information.",
   path: "/privacy",
 });
 

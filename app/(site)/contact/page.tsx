@@ -9,7 +9,7 @@ import { Breadcrumbs, Card, Container } from "@/components/site/ui";
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: "Contact Us | Brilliance Cleaning Newcastle",
-    description: "Contact Brilliance Cleaning & Property Staging in Newcastle. Call 0411 463 552, email admin@brillianceservices.com.au or send us a message.",
+    description: "Contact Brilliance Cleaning Services in Newcastle. Call 0411 463 552, email admin@brillianceservices.com.au or send us a message.",
     path: "/contact",
     override: await getPageSeo("/contact"),
   });

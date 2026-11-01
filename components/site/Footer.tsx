@@ -12,9 +12,9 @@ export function Footer({ s, services, hubs }: { s: SiteSettings; services: Servi
           <p className="text-lg font-extrabold text-white">
             Brilliance <span className="text-brand-200">Cleaning</span>
           </p>
-          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-white/60">&amp; Property Staging</p>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-white/60">Services</p>
           <p className="mt-4 text-sm leading-relaxed">
-            Cleaning, property staging and hospitality staffing for homes, businesses and venues across Newcastle and the Hunter Region.
+            Cleaning and hospitality staffing for homes, businesses and venues across Newcastle and the Hunter Region.
           </p>
           <ul className="mt-5 space-y-2.5 text-sm" data-track-label="footer">
             <li>

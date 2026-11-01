@@ -5,7 +5,7 @@ import { Breadcrumbs, Container } from "@/components/site/ui";
 
 export const metadata: Metadata = buildMetadata({
   title: "Terms of Service",
-  description: "Terms that apply to quotes, bookings and services provided by Brilliance Cleaning & Property Staging.",
+  description: "Terms that apply to quotes, bookings and services provided by Brilliance Cleaning Services.",
   path: "/terms",
 });
 

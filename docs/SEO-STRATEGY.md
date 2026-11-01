@@ -8,16 +8,18 @@ Goal: leads from organic search alone. The old WordPress site had almost no traf
 |---|---|---|
 | Tenants moving out | end of lease cleaning newcastle, bond cleaning maitland, vacate clean | `/services/end-of-lease-cleaning` + `/…/<region>` |
 | Homeowners | house cleaners newcastle, cleaners near me, deep clean | `/services/house-cleaning`, `/services/deep-cleaning`, suburb pages |
-| Sellers & agents | home staging newcastle, pre sale clean | `/services/property-staging`, `/services/pre-sale-cleaning` |
+| Sellers & agents | pre sale cleaning newcastle, cleaning before selling house | `/services/pre-sale-cleaning` + `/…/<region>` |
 | Venues (core strength) | restaurant / pub cleaning newcastle, winery cleaning hunter valley, hospitality staff hire | `/services/hospitality-cleaning`, `/services/hospitality-staffing` |
 | Businesses | office cleaning newcastle, commercial cleaners | `/services/commercial-cleaning` |
 | Builders / new estates | builders clean maitland, post construction cleaning | `/services/post-construction-cleaning/maitland` |
+
+> **2026-11-01:** property staging was dropped as a service. `/services/property-staging` (+ its region pages and the staging blog post) now 301 to pre-sale cleaning; the brand is **Brilliance Cleaning Services**.
 
 ## 2. Site architecture (implemented)
 
 ```
 /                                   brand + "cleaners newcastle"
-/services/<service>                 9 live services (4 drafts ready to switch on)
+/services/<service>                 8 live services (4 drafts ready to switch on)
 /services/<service>/<region>        35 service × region pages, each with unique copy
 /areas/<region>                     6 region hubs (Newcastle, Lake Macquarie, Maitland, Cessnock & Hunter Valley, Port Stephens, Singleton)
 /areas/<suburb>                     48 suburb pages with unique local content
@@ -35,7 +37,7 @@ Goal: leads from organic search alone. The old WordPress site had almost no traf
 
 All ~80 starting keywords are in **Admin → Content strategy**, grouped by cluster and mapped to a target URL. Status IDEA = no page yet (next content to write). Volumes and positions are blank until filled from Search Console (and optionally a keyword tool).
 
-Priority 1 clusters: end of lease / bond cleaning, house cleaning, office/commercial cleaning, hospitality cleaning, property staging — each × Newcastle first, then Maitland and Lake Macquarie.
+Priority 1 clusters: end of lease / bond cleaning, house cleaning, office/commercial cleaning, hospitality cleaning, pre-sale cleaning — each × Newcastle first, then Maitland and Lake Macquarie.
 
 ## 4. Content calendar (first 3 months)
 
@@ -45,7 +47,7 @@ Priority 1 clusters: end of lease / bond cleaning, house cleaning, office/commer
 |---|---|---|
 | 1 | How to get your full bond back in NSW · What agents check at the final inspection | Switch on Airbnb cleaning if offered (Port Stephens / Hunter Valley holiday lets) |
 | 2 | Office cleaning checklist for Newcastle businesses · Commercial kitchen cleaning checklist (NSW) | Add "commercial cleaning × Lake Macquarie/Maitland" variations with real examples |
-| 3 | Home staging cost in Newcastle · Wedding-season venue cleaning (Hunter Valley) | Carpet / window cleaning pages if the team does them |
+| 3 | Pre-sale cleaning cost in Newcastle · Wedding-season venue cleaning (Hunter Valley) | Carpet / window cleaning pages if the team does them |
 
 Each new post: quick-answer paragraph, 1,100–1,500 words, 3–5 FAQs, links to its service page(s) and `/quote`. Add the keyword to Content strategy and set status as it progresses.
 

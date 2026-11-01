@@ -1,15 +1,17 @@
-# Content brief — Brilliance Cleaning & Property Staging
+# Content brief — Brilliance Cleaning Services
 
 All site copy is seeded from JSON files in this folder (`content/*.json`) into Postgres by `scripts/seed.ts`, then editable in the admin panel. Write JSON with a Python script using `json.dump(..., ensure_ascii=False, indent=2)` so escaping is always valid, then re-load it with `json.load` to validate.
 
 ## Business facts (only use these — never invent others)
-- Brand: **Brilliance Cleaning & Property Staging** (also "Brilliance Services"). Domain brillianceservices.com.au
+- Brand: **Brilliance Cleaning Services** (also "Brilliance Services"; legal entity Brilliance Group Pty Ltd). Domain brillianceservices.com.au
 - Phone **0411 463 552** · Email admin@brillianceservices.com.au
 - Service area: **Newcastle and the Hunter Region, NSW** (Newcastle, Lake Macquarie, Maitland, Cessnock/Hunter Valley, Port Stephens, Singleton).
-- What they do: residential cleaning, end of lease (move-in / move-out) cleaning, commercial cleaning, post-construction cleaning, property staging, and **cleaning + staffing solutions for hospitality venues** (pubs, clubs, restaurants, cafés, hotels, function venues, wineries) across Newcastle and the Hunter.
+- What they do: residential cleaning, end of lease (move-in / move-out) cleaning, commercial cleaning, post-construction cleaning, pre-sale cleaning, and **cleaning + staffing solutions for hospitality venues** (pubs, clubs, restaurants, cafés, hotels, function venues, wineries) across Newcastle and the Hunter.
 - Staffing roles (confirmed from their own signup form): **chefs, cooks, kitchen hands and cleaners** — labour hire, PAYG or ABN, casual / part-time / full-time / event shifts. Staff apply at `/careers`.
 - Numbers they publish: 50+ happy customers, 30+ staff.
 - Positioning they use: professional trained team, tailored packages, flexible scheduling around the client, "Let us handle the details so you don't have to".
+
+**No property staging.** The business stopped offering property staging (furniture hire / styling) in Nov 2026. Never mention staging, styling or furniture hire; pre-sale cleaning is cleaning only. Old staging URLs 301 to `/services/pre-sale-cleaning` (see `scripts/remove-staging.ts`).
 
 ## Claims you must NOT make (not confirmed by the client yet)
 No years-in-business, no insurance amounts, no "police checked", no "bond back guarantee" / "100% guarantee", no awards, no review counts or star ratings, no "#1", no named clients, no fake testimonials, no specific prices presented as Brilliance's own prices. Do not name competitors.
@@ -37,7 +39,6 @@ Cost guides (blog) may quote **typical market ranges** for Newcastle, clearly fr
 | hospitality-cleaning | Hospitality Venue Cleaning | commercial | true |
 | hospitality-staffing | Hospitality Staffing | commercial | true |
 | post-construction-cleaning | Post-Construction Cleaning | specialist | true |
-| property-staging | Property Staging | specialist | true |
 | airbnb-cleaning | Airbnb & Holiday Rental Cleaning | residential | false |
 | carpet-cleaning | Carpet Steam Cleaning | specialist | false |
 | window-cleaning | Window Cleaning | specialist | false |
@@ -111,7 +112,7 @@ Hubs: intro 120–160 words, localContent 450–650 words covering the whole reg
   "metaTitle": "…≤60",
   "metaDescription": "…",
   "excerpt": "≤ 35 words",
-  "category": "Guides",          // Guides | Cost Guides | Tips | Hospitality | Property Staging
+  "category": "Guides",          // Guides | Cost Guides | Tips | Hospitality
   "tags": ["end of lease", "bond"],
   "readMinutes": 7,
   "body": "markdown 1100–1500 words, ## / ### only, includes a short 'Quick answer' paragraph at the top for AI Overviews, at least 2 internal links to /services/... and one to /quote",

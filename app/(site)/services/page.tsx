@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: "Cleaning Services Newcastle & Hunter",
     description:
-      "Every service we offer across Newcastle and the Hunter: end of lease, house, deep, commercial, hospitality and post-construction cleaning, plus property staging.",
+      "Every service we offer across Newcastle and the Hunter: end of lease, house, deep, pre-sale, commercial, hospitality and post-construction cleaning, plus venue staffing.",
     path: "/services",
     override: await getPageSeo("/services"),
   });
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const GROUPS = [
   { key: "residential", title: "Home cleaning", intro: "Regular, one-off and moving cleans for houses, units and rentals." },
   { key: "commercial", title: "Business & hospitality", intro: "Offices, shops, pubs, clubs, restaurants, hotels and venues." },
-  { key: "specialist", title: "Specialist services", intro: "Builders cleans and property staging for sales and new builds." },
+  { key: "specialist", title: "Specialist services", intro: "Builders cleans for new homes, renovations and fit-outs." },
 ];
 
 export default async function ServicesPage() {
@@ -30,7 +30,7 @@ export default async function ServicesPage() {
           <Breadcrumbs items={[{ name: "Services", path: "/services" }]} />
           <h1 className="mt-5 max-w-3xl text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">Cleaning services across Newcastle &amp; the Hunter</h1>
           <p className="mt-4 max-w-2xl text-lg text-ink-soft">
-            One local team for homes, rentals, workplaces and hospitality venues — plus property staging and venue staff when you need extra hands.
+            One local team for homes, rentals, workplaces and hospitality venues — plus trained venue staff when you need extra hands.
           </p>
         </Container>
       </section>

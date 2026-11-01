@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BedDouble, Building2, CheckCircle2, Sofa, UtensilsCrossed, Users } from "lucide-react";
+import { ArrowRight, Camera, CheckCircle2, KeyRound, Sparkles, UtensilsCrossed, Users } from "lucide-react";
 import { getAreas, getFaqs, getPageSeo, getPosts, getReviews, getServices } from "@/lib/data";
 import { getSettings } from "@/lib/settings";
 import { buildMetadata, faqJsonLd } from "@/lib/seo";
@@ -11,9 +11,9 @@ import { CallButton, Card, Container, FaqList, JsonLd, QuoteButton, SectionHeadi
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
-    title: "Cleaning & Property Staging Newcastle | Brilliance Cleaning",
+    title: "Cleaning Services Newcastle & Hunter | Brilliance Cleaning",
     description:
-      "End of lease, house, commercial and hospitality venue cleaning plus property staging across Newcastle & the Hunter. Free quotes – call 0411 463 552.",
+      "End of lease, house, pre-sale, commercial and hospitality venue cleaning plus venue staffing across Newcastle & the Hunter. Free quotes – call 0411 463 552.",
     path: "/",
     override: await getPageSeo("/"),
   });
@@ -47,10 +47,10 @@ export default async function HomePage() {
               <span className="size-2 rounded-full bg-brand-500" /> Newcastle &amp; Hunter Region cleaners
             </p>
             <h1 className="mt-5 text-[2.35rem] font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.4rem]">
-              Cleaning &amp; property staging <span className="text-brand-600">across Newcastle</span> and the Hunter
+              Cleaning services <span className="text-brand-600">across Newcastle</span> and the Hunter
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft">
-              Homes, rentals, offices and hospitality venues — cleaned to a written checklist by a local team. Plus property staging to help you sell, and trained
+              Homes, rentals, offices and hospitality venues — cleaned to a written checklist by a local team. Plus pre-sale cleans to help you sell, and trained
               staff for busy venues.
             </p>
             <ul className="mt-6 grid max-w-xl gap-2 text-[0.95rem] font-medium text-ink sm:grid-cols-2">
@@ -100,7 +100,7 @@ export default async function HomePage() {
           <SectionHeading
             eyebrow="What we do"
             title="Cleaning services for homes, businesses and venues"
-            intro="From a one-off bond clean to nightly venue cleaning and full property staging — one local team, one point of contact."
+            intro="From a one-off bond clean to nightly venue cleaning and a pre-sale clean before you list — one local team, one point of contact."
           />
           <div className="mt-10">
             <ServiceGrid services={featured} />
@@ -172,21 +172,21 @@ export default async function HomePage() {
           </div>
           <div className="rounded-3xl bg-white/5 p-7 ring-1 ring-white/10 sm:p-9">
             <div className="flex gap-3 text-coral-500">
-              <Sofa className="size-8" aria-hidden />
-              <BedDouble className="size-8" aria-hidden />
-              <Building2 className="size-8" aria-hidden />
+              <Camera className="size-8" aria-hidden />
+              <Sparkles className="size-8" aria-hidden />
+              <KeyRound className="size-8" aria-hidden />
             </div>
-            <h2 className="mt-5 text-2xl font-extrabold sm:text-3xl">Selling? Clean, then stage</h2>
+            <h2 className="mt-5 text-2xl font-extrabold sm:text-3xl">Selling? Get it photo-ready</h2>
             <p className="mt-3 leading-relaxed text-white/80">
-              Buyers decide from the listing photos. We deep clean first, then style rooms with furniture and décor so your home photographs well and feels ready to move
-              into at the open home — one team, one timeline, ready for your agent&apos;s campaign.
+              Buyers decide from the listing photos. Our pre-sale clean is timed to your agent&apos;s photo and open home dates, with glass, kitchens, bathrooms and
+              floors detailed so the home photographs well — plus quick touch-ups before each open if your campaign runs over several weekends.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/services/property-staging" className="inline-flex items-center gap-1 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-ink hover:bg-brand-50">
-                Property staging <ArrowRight className="size-4" aria-hidden />
-              </Link>
-              <Link href="/services/pre-sale-cleaning" className="inline-flex items-center gap-1 rounded-full px-5 py-2.5 text-sm font-bold text-white ring-1 ring-white/30 hover:bg-white/10">
+              <Link href="/services/pre-sale-cleaning" className="inline-flex items-center gap-1 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-ink hover:bg-brand-50">
                 Pre-sale cleaning <ArrowRight className="size-4" aria-hidden />
+              </Link>
+              <Link href="/services/end-of-lease-cleaning" className="inline-flex items-center gap-1 rounded-full px-5 py-2.5 text-sm font-bold text-white ring-1 ring-white/30 hover:bg-white/10">
+                Moving out? End of lease cleaning <ArrowRight className="size-4" aria-hidden />
               </Link>
             </div>
           </div>

@@ -11,7 +11,7 @@ import { SubmitButton } from "@/components/admin/SubmitButton";
 import { MarkdownField } from "@/components/admin/MarkdownField";
 import { SeoAssistant } from "@/components/admin/SeoAssistant";
 
-const CATEGORIES = ["Guides", "Cost Guides", "Tips", "Hospitality", "Property Staging", "News"];
+const CATEGORIES = ["Guides", "Cost Guides", "Tips", "Hospitality", "News"];
 
 export default async function PostEdit({ params, searchParams }: PageProps<"/admin/posts/[id]">) {
   const user = await requireUser();

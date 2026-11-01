@@ -39,7 +39,7 @@ export type SiteSettings = {
 };
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  businessName: "Brilliance Cleaning & Property Staging",
+  businessName: "Brilliance Cleaning Services",
   shortName: "Brilliance Cleaning",
   phone: "+61411463552",
   phoneDisplay: "0411 463 552",
