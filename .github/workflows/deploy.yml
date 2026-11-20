@@ -1,0 +1,66 @@
+# CI/CD for Brilliance Cleaning (brillianceservices.com.au)
+#
+# - Every push / PR: install + typecheck.
+# - Push to main (or manual run): after checks pass, SSH to the production server and run
+#   /usr/local/bin/ci-deploy there. The deploy key is a forced-command key that can ONLY run
+#   "ci-deploy brilliance" — it builds origin/main next to the live copy, swaps it in, health-checks
+#   and rolls back automatically if the new release does not come up.
+#
+# Repo secrets (Settings > Secrets and variables > Actions):
+#   DEPLOY_HOST         server IP / hostname
+#   DEPLOY_SSH_KEY      private half of the forced-command deploy key
+#   DEPLOY_KNOWN_HOSTS  output of: ssh-keyscan -t ed25519 <DEPLOY_HOST>
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "deploy | rollback | status"
+        default: deploy
+        type: choice
+        options: [deploy, rollback, status]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx prisma generate
+      - run: npx next typegen
+      - run: npx tsc --noEmit
+
+  deploy:
+    needs: check
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production
+    steps:
+      - name: Run ci-deploy on server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          ACTION: ${{ github.event.inputs.action || 'deploy' }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes \
+              -o ServerAliveInterval=30 -o ServerAliveCountMax=10 \
+              "root@$DEPLOY_HOST" "$ACTION"
