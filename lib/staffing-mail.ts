@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import { mailer as transport } from "./mailer";
 import type { Prisma } from "@prisma/client";
 import { db } from "./db";
 import { SITE_URL } from "./seo";
@@ -7,16 +7,6 @@ import { fillBookingTemplate, readStaffingSettings } from "./staffing-settings";
 import { fmtDay } from "./sydney";
 
 export type Activity = { at: string; actor: string; type: string; message: string };
-
-function transport() {
-  if (!process.env.SMTP_HOST) return null;
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: Number(process.env.SMTP_PORT) === 465,
-    auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
-  });
-}
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 const asHtml = (body: string) => `<div style="font-family:Arial,sans-serif;max-width:600px;white-space:pre-wrap;line-height:1.5">${esc(body)}</div>`;
@@ -57,7 +47,7 @@ function vars(b: Awaited<ReturnType<typeof db.staffBooking.findUniqueOrThrow>>, 
 export async function sendBookingEmails(id: number) {
   try {
     const t = transport();
-    if (!t) return await logActivity(id, { actor: "system", type: "email", message: "Emails not sent — SMTP not configured" });
+    if (!t) return await logActivity(id, { actor: "system", type: "email", message: "Emails not sent — email sending not configured" });
     const [b, s, site] = await Promise.all([db.staffBooking.findUniqueOrThrow({ where: { id } }), readStaffingSettings(), readSettings()]);
     const v = vars(b, site.businessName);
     const from = process.env.MAIL_FROM || "Brilliance Website <no-reply@brillianceservices.com.au>";
@@ -88,7 +78,7 @@ export async function sendBookingEmails(id: number) {
 /** Sends a template or custom email to the booking contact and logs it. */
 export async function sendBookingMail(id: number, opts: { kind: "confirmation" } | { kind: "custom"; to: string; subject: string; body: string }, actor: string) {
   const t = transport();
-  if (!t) return { ok: false, error: "SMTP isn't configured on the server yet." };
+  if (!t) return { ok: false, error: "Email sending isn't configured on the server yet." };
   const [b, s, site] = await Promise.all([db.staffBooking.findUniqueOrThrow({ where: { id } }), readStaffingSettings(), readSettings()]);
   const v = vars(b, site.businessName);
   const configuredFrom = process.env.MAIL_FROM || "no-reply@brillianceservices.com.au";

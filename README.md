@@ -7,7 +7,7 @@ Replacement for the WordPress site at brillianceservices.com.au. Goal: win leads
 - **Next.js 16** (App Router, Cache Components, `proxy.ts`) + React 19 + TypeScript + Tailwind v4
 - **Postgres** via **Prisma 6** (`prisma/schema.prisma`)
 - No external CMS: all content lives in the DB and is edited in `/admin`
-- Email: any SMTP (SMTP2GO recommended) via nodemailer
+- Email: SMTP2GO HTTP API (`SMTP2GO_API_KEY`), falling back to any SMTP via nodemailer (`lib/mailer.ts`)
 
 > Next 16 differs from older versions. Read `node_modules/next/dist/docs/` before changing caching, routing or proxy code (see `AGENTS.md`).
 

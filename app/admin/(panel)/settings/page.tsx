@@ -3,6 +3,7 @@ import { readSettings } from "@/lib/settings";
 import { saveSettings } from "@/app/admin/actions/seo";
 import { Check, Field, Notice, PageHeader, Panel } from "@/components/admin/ui";
 import { SubmitButton } from "@/components/admin/SubmitButton";
+import { mailConfigured } from "@/lib/mailer";
 
 export default async function SettingsPage({ searchParams }: PageProps<"/admin/settings">) {
   await requireAdmin();
@@ -52,7 +53,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
               <Check label="Send customer an automatic 'thanks, we got it' email" name="autoReply" defaultChecked={s.autoReply} />
             </div>
           </div>
-          <p className="mt-2 text-xs text-ink-soft">SMTP server details live in the server&apos;s .env file (SMTP_HOST, SMTP_USER, SMTP_PASS). {process.env.SMTP_HOST ? "✓ SMTP configured." : "⚠ SMTP not configured yet."}</p>
+          <p className="mt-2 text-xs text-ink-soft">Email sending is configured in the server&apos;s .env file (SMTP2GO_API_KEY + MAIL_FROM, or SMTP_HOST/SMTP_USER/SMTP_PASS). {mailConfigured() ? "✓ Email configured." : "⚠ Email not configured yet."}</p>
         </Panel>
 
         <Panel title="Analytics & ads">

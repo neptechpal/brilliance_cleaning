@@ -1,25 +1,15 @@
-import nodemailer from "nodemailer";
+import { mailer as transport } from "./mailer";
 import type { Lead, StaffApplication } from "@prisma/client";
 import type { SiteSettings } from "./settings";
 import { channelLabel } from "./attribution";
 import { SITE_URL } from "./seo";
-
-function transport() {
-  if (!process.env.SMTP_HOST) return null;
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: Number(process.env.SMTP_PORT) === 465,
-    auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
-  });
-}
 
 const esc = (s: unknown) =>
   String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
 export async function sendLeadNotification(lead: Lead, s: SiteSettings): Promise<{ ok: boolean; error?: string }> {
   const t = transport();
-  if (!t) return { ok: false, error: "SMTP not configured" };
+  if (!t) return { ok: false, error: "Email not configured" };
   const to = s.notifyEmails.split(",").map((e) => e.trim()).filter(Boolean);
   if (!to.length) return { ok: false, error: "No notification emails set" };
 
@@ -80,7 +70,7 @@ export async function sendLeadNotification(lead: Lead, s: SiteSettings): Promise
 
 export async function sendApplicationNotification(a: StaffApplication, s: SiteSettings): Promise<{ ok: boolean; error?: string }> {
   const t = transport();
-  if (!t) return { ok: false, error: "SMTP not configured" };
+  if (!t) return { ok: false, error: "Email not configured" };
   const to = s.notifyEmails.split(",").map((e) => e.trim()).filter(Boolean);
   if (!to.length) return { ok: false, error: "No notification emails set" };
   const name = `${a.firstName} ${a.lastName}`;

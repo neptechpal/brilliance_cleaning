@@ -5,6 +5,7 @@ import { readSettings } from "@/lib/settings";
 import { channelLabel } from "@/lib/attribution";
 import { channelBreakdown, daily, daysAgo, pagePerformance, sydneyStartOfToday } from "@/lib/admin-stats";
 import { Badge, Bars, Notice, PageHeader, Panel, Stat, Table, fmtDate, td } from "@/components/admin/ui";
+import { mailConfigured } from "@/lib/mailer";
 
 export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
   await requireUser();
@@ -38,8 +39,8 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
     <>
       <PageHeader title="Dashboard" intro="Last 30 days · Sydney time. Leads exclude spam; call clicks are taps on any phone number on the site." />
       {sp.denied && <Notice tone="warn">That area is for admins only.</Notice>}
-      {!process.env.SMTP_HOST && <Notice tone="warn">Email notifications are off — set SMTP_* in the server .env. Leads are still saved here.</Notice>}
-      {unsent > 0 && process.env.SMTP_HOST && <Notice tone="bad">{unsent} lead notification email(s) failed in the last 7 days. Check SMTP settings — the leads are safe in the Leads list.</Notice>}
+      {!mailConfigured() && <Notice tone="warn">Email notifications are off — set SMTP2GO_API_KEY (or SMTP_*) in the server .env. Leads are still saved here.</Notice>}
+      {unsent > 0 && mailConfigured() && <Notice tone="bad">{unsent} lead notification email(s) failed in the last 7 days. Check the email settings — the leads are safe in the Leads list.</Notice>}
       {!settings.ga4Id && !settings.gtmId && (
         <Notice tone="warn">
           Google Analytics isn&apos;t connected yet. Add your GA4 / Google Ads IDs in <Link className="underline" href="/admin/settings">Settings</Link> (built-in tracking below works regardless).
