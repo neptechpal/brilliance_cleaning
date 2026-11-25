@@ -3,12 +3,13 @@ import { readSettings } from "@/lib/settings";
 import { saveSettings } from "@/app/admin/actions/seo";
 import { Check, Field, Notice, PageHeader, Panel } from "@/components/admin/ui";
 import { SubmitButton } from "@/components/admin/SubmitButton";
-import { mailConfigured } from "@/lib/mailer";
+import { mailer, readMailSettings } from "@/lib/mailer";
+import { saveMailSettings, sendTestEmail } from "@/app/admin/actions/mail";
 
 export default async function SettingsPage({ searchParams }: PageProps<"/admin/settings">) {
   await requireAdmin();
   const sp = await searchParams;
-  const s = await readSettings();
+  const [s, mail, t] = await Promise.all([readSettings(), readMailSettings(), mailer()]);
   return (
     <>
       <PageHeader title="Settings & tracking" intro="Business details used across the site, schema markup and emails, plus analytics/ads IDs." />
@@ -53,7 +54,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
               <Check label="Send customer an automatic 'thanks, we got it' email" name="autoReply" defaultChecked={s.autoReply} />
             </div>
           </div>
-          <p className="mt-2 text-xs text-ink-soft">Email sending is configured in the server&apos;s .env file (SMTP2GO_API_KEY + MAIL_FROM, or SMTP_HOST/SMTP_USER/SMTP_PASS). {mailConfigured() ? "✓ Email configured." : "⚠ Email not configured yet."}</p>
+          <p className="mt-2 text-xs text-ink-soft">{t ? `✓ Emails are sent via ${t.via} from ${t.from.address}.` : "⚠ Email sending isn’t set up yet — add your SMTP2GO API key under Email sending below."}</p>
         </Panel>
 
         <Panel title="Analytics & ads">
@@ -75,6 +76,36 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
         <div className="sticky bottom-4">
           <SubmitButton className="shadow-lg">Save settings</SubmitButton>
         </div>
+      </form>
+
+      <form action={saveMailSettings} id="email" className="mt-6 scroll-mt-4">
+        <Panel title="Email sending (SMTP2GO)">
+          {sp.mail === "saved" && <Notice>Email settings saved.</Notice>}
+          {sp.mail === "sent" && <Notice>Test email sent to {s.notifyEmails}. Check the inbox (and spam folder).</Notice>}
+          {typeof sp.mailerror === "string" && <Notice tone="bad">{sp.mailerror}</Notice>}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <Field
+              label="SMTP2GO API key"
+              name="smtp2goApiKey"
+              type="password"
+              autoComplete="off"
+              placeholder={mail.smtp2goApiKey ? `Saved (ends …${mail.smtp2goApiKey.slice(-4)}) — leave blank to keep` : "api-XXXXXXXXXXXXXXXX"}
+              hint="SMTP2GO → Sending → API Keys. Needs permission to send email."
+            />
+            <Field label="Sender email (verified in SMTP2GO)" name="fromEmail" type="email" defaultValue={mail.fromEmail} placeholder={t?.from.address} hint="Must be a verified sender or domain in SMTP2GO" />
+            <Field label="Sender name" name="fromName" defaultValue={mail.fromName} placeholder={t?.from.name || "Brilliance Cleaning"} />
+          </div>
+          {mail.smtp2goApiKey && (
+            <div className="mt-3">
+              <Check label="Remove the saved API key" name="clearApiKey" />
+            </div>
+          )}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <SubmitButton>Save email settings</SubmitButton>
+            <SubmitButton variant="ghost" formAction={sendTestEmail}>Send test email</SubmitButton>
+          </div>
+          <p className="mt-2 text-xs text-ink-soft">The test goes to the &ldquo;Send new leads to&rdquo; addresses above. Save first if you changed anything.</p>
+        </Panel>
       </form>
     </>
   );

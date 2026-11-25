@@ -46,14 +46,12 @@ function vars(b: Awaited<ReturnType<typeof db.staffBooking.findUniqueOrThrow>>, 
 /** New booking: notify the office and acknowledge the client. Never throws. */
 export async function sendBookingEmails(id: number) {
   try {
-    const t = transport();
+    const t = await transport();
     if (!t) return await logActivity(id, { actor: "system", type: "email", message: "Emails not sent — email sending not configured" });
     const [b, s, site] = await Promise.all([db.staffBooking.findUniqueOrThrow({ where: { id } }), readStaffingSettings(), readSettings()]);
     const v = vars(b, site.businessName);
-    const from = process.env.MAIL_FROM || "Brilliance Website <no-reply@brillianceservices.com.au>";
     const office = [s.notifyEmail, ...site.notifyEmails.split(",")].map((x) => x.trim()).filter(Boolean);
     await t.sendMail({
-      from,
       to: [...new Set(office)],
       replyTo: b.contactEmail,
       subject: `New staff booking: ${b.quantity} × ${b.position} at ${b.venue} (${b.date})`,
@@ -63,7 +61,7 @@ export async function sendBookingEmails(id: number) {
     });
     await logActivity(id, { actor: "system", type: "email", message: `Office notified (${office.join(", ")})` });
     await t.sendMail({
-      from: { name: s.confirmFromName, address: from.match(/<([^>]+)>/)?.[1] ?? from },
+      from: { name: s.confirmFromName, address: t.from.address },
       to: b.contactEmail,
       replyTo: s.notifyEmail || site.email,
       subject: fillBookingTemplate(s.ackSubject, v),
@@ -77,12 +75,11 @@ export async function sendBookingEmails(id: number) {
 
 /** Sends a template or custom email to the booking contact and logs it. */
 export async function sendBookingMail(id: number, opts: { kind: "confirmation" } | { kind: "custom"; to: string; subject: string; body: string }, actor: string) {
-  const t = transport();
+  const t = await transport();
   if (!t) return { ok: false, error: "Email sending isn't configured on the server yet." };
   const [b, s, site] = await Promise.all([db.staffBooking.findUniqueOrThrow({ where: { id } }), readStaffingSettings(), readSettings()]);
   const v = vars(b, site.businessName);
-  const configuredFrom = process.env.MAIL_FROM || "no-reply@brillianceservices.com.au";
-  const fromAddr = configuredFrom.match(/<([^>]+)>/)?.[1] ?? configuredFrom;
+  const fromAddr = t.from.address;
   const msg =
     opts.kind === "confirmation"
       ? { to: b.contactEmail, subject: fillBookingTemplate(s.confirmSubject, v), body: fillBookingTemplate(s.confirmBody, v) }

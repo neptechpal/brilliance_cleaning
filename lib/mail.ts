@@ -8,7 +8,7 @@ const esc = (s: unknown) =>
   String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
 export async function sendLeadNotification(lead: Lead, s: SiteSettings): Promise<{ ok: boolean; error?: string }> {
-  const t = transport();
+  const t = await transport();
   if (!t) return { ok: false, error: "Email not configured" };
   const to = s.notifyEmails.split(",").map((e) => e.trim()).filter(Boolean);
   if (!to.length) return { ok: false, error: "No notification emails set" };
@@ -43,7 +43,6 @@ export async function sendLeadNotification(lead: Lead, s: SiteSettings): Promise
 
   try {
     await t.sendMail({
-      from: process.env.MAIL_FROM || `Brilliance Website <no-reply@brillianceservices.com.au>`,
       to,
       replyTo: lead.email || undefined,
       subject: `New lead: ${lead.serviceName || "Enquiry"} – ${lead.name}${lead.suburb ? ` (${lead.suburb})` : ""}`,
@@ -51,7 +50,6 @@ export async function sendLeadNotification(lead: Lead, s: SiteSettings): Promise
     });
     if (s.autoReply && lead.email) {
       await t.sendMail({
-        from: process.env.MAIL_FROM || `Brilliance Cleaning <no-reply@brillianceservices.com.au>`,
         to: lead.email,
         replyTo: s.email,
         subject: `Thanks ${lead.name.split(" ")[0]} – we've got your request`,
@@ -69,7 +67,7 @@ export async function sendLeadNotification(lead: Lead, s: SiteSettings): Promise
 }
 
 export async function sendApplicationNotification(a: StaffApplication, s: SiteSettings): Promise<{ ok: boolean; error?: string }> {
-  const t = transport();
+  const t = await transport();
   if (!t) return { ok: false, error: "Email not configured" };
   const to = s.notifyEmails.split(",").map((e) => e.trim()).filter(Boolean);
   if (!to.length) return { ok: false, error: "No notification emails set" };
@@ -88,7 +86,6 @@ export async function sendApplicationNotification(a: StaffApplication, s: SiteSe
   ];
   try {
     await t.sendMail({
-      from: process.env.MAIL_FROM || `Brilliance Website <no-reply@brillianceservices.com.au>`,
       to,
       replyTo: a.email ?? undefined,
       subject: `New staff application: ${name}${a.roles.length ? ` (${a.roles.join(", ")})` : ""}`,
@@ -105,7 +102,6 @@ export async function sendApplicationNotification(a: StaffApplication, s: SiteSe
     });
     if (s.autoReply && a.email) {
       await t.sendMail({
-        from: process.env.MAIL_FROM || `Brilliance Cleaning <no-reply@brillianceservices.com.au>`,
         to: a.email,
         replyTo: s.email,
         subject: `Thanks ${a.firstName} – we've received your application`,

@@ -33,14 +33,15 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
     db.staffApplication.count({ where: { status: "NEW" } }),
     db.staffBooking.count({ where: { status: "NEW" } }),
   ]);
+  const mailOn = await mailConfigured();
   const conv = views30 ? (((leads30 + calls30) / views30) * 100).toFixed(1) : "0";
 
   return (
     <>
       <PageHeader title="Dashboard" intro="Last 30 days · Sydney time. Leads exclude spam; call clicks are taps on any phone number on the site." />
       {sp.denied && <Notice tone="warn">That area is for admins only.</Notice>}
-      {!mailConfigured() && <Notice tone="warn">Email notifications are off — set SMTP2GO_API_KEY (or SMTP_*) in the server .env. Leads are still saved here.</Notice>}
-      {unsent > 0 && mailConfigured() && <Notice tone="bad">{unsent} lead notification email(s) failed in the last 7 days. Check the email settings — the leads are safe in the Leads list.</Notice>}
+      {!mailOn && <Notice tone="warn">Email notifications are off — add your SMTP2GO API key in <Link className="underline" href="/admin/settings#email">Settings → Email sending</Link>. Leads are still saved here.</Notice>}
+      {unsent > 0 && mailOn && <Notice tone="bad">{unsent} lead notification email(s) failed in the last 7 days. Check <Link className="underline" href="/admin/settings#email">email settings</Link> — the leads are safe in the Leads list.</Notice>}
       {!settings.ga4Id && !settings.gtmId && (
         <Notice tone="warn">
           Google Analytics isn&apos;t connected yet. Add your GA4 / Google Ads IDs in <Link className="underline" href="/admin/settings">Settings</Link> (built-in tracking below works regardless).
